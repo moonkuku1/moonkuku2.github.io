@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>天命 · 사주풀이</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{--ink:#1a1411;--paper:#f1e6cc;--paper2:#e7d8b5;--red:#9b2d20;--gold:#b8913b;--line:#c9b68a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Gungsuh','궁서','Nanum Myeongjo',serif;color:var(--ink);min-height:100vh;background:#0d0a14;line-height:1.85;font-size:17px}
+.bg{position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 20%,#2a1f3d 0%,#14101f 55%,#07050c 100%)}
+.bg svg{width:100%;height:100%}
+.ring{transform-origin:500px 480px;animation:spin 240s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+header{text-align:center;padding:42px 16px 18px;color:var(--paper)}
+header h1{font-size:2.5rem;letter-spacing:.35em;color:#e8c872;text-shadow:0 0 18px rgba(232,200,114,.45)}
+header p{opacity:.8;letter-spacing:.2em;font-size:.95rem;margin-top:6px}
+main{max-width:720px;margin:0 auto;padding:12px 16px 60px}
+.card{background:var(--paper);background-image:repeating-linear-gradient(0deg,rgba(120,90,40,.04) 0 2px,transparent 2px 5px);border:2px solid var(--gold);outline:6px double rgba(184,145,59,.35);outline-offset:4px;border-radius:4px;padding:30px 26px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+.card h2{text-align:center;color:var(--red);font-size:1.5rem;margin-bottom:18px;letter-spacing:.15em}
+label.t{display:block;font-weight:800;margin:18px 0 6px;font-size:1.02rem}
+input[type=text],input[type=date],select{width:100%;padding:12px;border:1.5px solid var(--line);background:#fbf5e4;font:inherit;font-size:1.02rem;color:var(--ink);border-radius:3px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0}
+.chip span{display:block;padding:10px 16px;border:1.5px solid var(--line);background:#fbf5e4;cursor:pointer;border-radius:3px;font-weight:700}
+.chip input:checked+span{background:var(--red);color:#fff;border-color:var(--red)}
+.btn{display:block;width:100%;margin-top:26px;padding:15px;background:var(--red);color:#fff;border:none;font:inherit;font-weight:800;font-size:1.12rem;letter-spacing:.1em;cursor:pointer;border-radius:3px;box-shadow:0 3px 0 #5e1710}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn.sub{background:#4a3b2a;box-shadow:0 3px 0 #251c12}
+.btns{display:flex;gap:10px;flex-wrap:wrap}.btns .btn{flex:1;min-width:140px}
+.hide{display:none!important}
+.sum{background:#fbf5e4;border:1px dashed var(--gold);padding:16px;margin-bottom:12px}
+.sum div{display:flex;justify-content:space-between;padding:3px 0}
+.price{font-size:1.7rem;color:var(--red);font-weight:800}
+.note{font-size:.85rem;opacity:.7;margin-top:10px;line-height:1.6}
+/* result */
+.rtitle{text-align:center;border-bottom:2px solid var(--gold);padding-bottom:14px;margin-bottom:6px}
+.rtitle b{font-size:1.45rem;color:var(--red)}.rtitle small{display:block;opacity:.75}
+.pil{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.pil div{text-align:center;border:1.5px solid var(--line);background:#fbf5e4;padding:10px 4px}
+.pil em{display:block;font-style:normal;font-size:.8rem;opacity:.7}
+.pil .h{font-size:2rem;font-weight:800;line-height:1.2}
+.pil .k{font-size:.85rem}
+.bar{display:flex;align-items:center;gap:8px;margin:5px 0}.bar i{display:block;height:14px;border-radius:2px}
+.rs h3{color:var(--red);margin:24px 0 6px;font-size:1.15rem;border-left:5px solid var(--gold);padding-left:10px}
+.rs p{margin:6px 0;word-break:keep-all}
+.foot{text-align:center;font-size:.8rem;opacity:.65;margin-top:26px;border-top:1px solid var(--line);padding-top:10px}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#000c;color:#fff;padding:12px 22px;border-radius:30px;z-index:9;font-family:sans-serif;font-size:.95rem}
+</style>
+</head>
+<body>
+<div class="bg"><svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" id="bgsvg">
+<defs><radialGradient id="moon"><stop offset="0" stop-color="#fff6d8"/><stop offset="1" stop-color="#e8c872"/></radialGradient></defs>
+<g id="stars"></g>
+<circle cx="500" cy="480" r="150" fill="url(#moon)" opacity=".16"/>
+<g class="ring" id="ring" opacity=".28"></g>
+<g transform="translate(500 480)" opacity=".35"><circle r="62" fill="#e9dcc0"/><path d="M0,-62A62,62 0 0 1 0,62A31,31 0 0 1 0,0A31,31 0 0 0 0,-62" fill="#9b2d20"/><circle cy="-31" r="9" fill="#9b2d20"/><circle cy="31" r="9" fill="#e9dcc0"/></g>
+<path d="M0,1000V820Q120,720 230,800T430,760T620,830T820,740T1000,810V1000Z" fill="#0a0812" opacity=".85"/>
+<path d="M0,1000V900Q150,830 300,890T600,870T850,900T1000,860V1000Z" fill="#05040a"/>
+</svg></div>
+
+<header><h1>天命 · 사주</h1><p>하늘이 내린 인연의 길을 살펴봅니다</p></header>
+
+<main>
+<!-- STEP 1 : 정보 입력 -->
+<section id="s1" class="card">
+<h2>生辰 入力 · 정보 입력</h2>
+<form id="f">
+<label class="t">성함</label>
+<input type="text" id="name" placeholder="성함을 입력하세요" required maxlength="20">
+
+<label class="t">생년월일</label>
+<div class="row" style="margin-bottom:8px">
+<label class="chip"><input type="radio" name="cal" value="solar" checked><span>양력</span></label>
+<label class="chip"><input type="radio" name="cal" value="lunar"><span>음력</span></label>
+<label class="chip hide" id="leapWrap"><input type="checkbox" id="leap"><span>윤달</span></label>
+</div>
+<input type="date" id="birth" min="1900-01-01" max="2100-12-31" required>
+
+<label class="t">태어난 시간</label>
+<select id="time">
+<option value="x">모름 (시주 제외)</option>
+<option value="0">자시 (23:30~01:29)</option><option value="2">축시 (01:30~03:29)</option>
+<option value="4">인시 (03:30~05:29)</option><option value="6">묘시 (05:30~07:29)</option>
+<option value="8">진시 (07:30~09:29)</option><option value="10">사시 (09:30~11:29)</option>
+<option value="12">오시 (11:30~13:29)</option><option value="14">미시 (13:30~15:29)</option>
+<option value="16">신시 (15:30~17:29)</option><option value="18">유시 (17:30~19:29)</option>
+<option value="20">술시 (19:30~21:29)</option><option value="22">해시 (21:30~23:29)</option>
+</select>
+
+<label class="t">성별</label>
+<div class="row">
+<label class="chip"><input type="radio" name="g" value="남" checked><span>남성</span></label>
+<label class="chip"><input type="radio" name="g" value="여"><span>여성</span></label>
+</div>
+
+<label class="t">풀이 카테고리</label>
+<div class="row" id="cats"></div>
+<input type="text" id="custom" class="hide" style="margin-top:10px" placeholder="궁금한 내용을 직접 입력하세요 (예: 재회, 짝사랑, 이직 후 연애)" maxlength="60">
+
+<button class="btn" type="submit">다음 · 결제하기</button>
+</form>
+</section>
+
+<!-- STEP 2 : 결제 -->
+<section id="s2" class="card hide">
+<h2>結制 · 결제</h2>
+<div class="sum">
+<div><span>상품</span><b id="pItem"></b></div>
+<div><span>성함</span><span id="pName"></span></div>
+<div><span>결제 금액</span><span class="price" id="pPrice"></span></div>
+</div>
+<label class="t">결제 수단</label>
+<div class="row">
+<label class="chip"><input type="radio" name="pay" value="card" checked><span>신용/체크카드</span></label>
+<label class="chip"><input type="radio" name="pay" value="kakao"><span>카카오페이</span></label>
+<label class="chip"><input type="radio" name="pay" value="naver"><span>네이버페이</span></label>
+<label class="chip"><input type="radio" name="pay" value="bank"><span>계좌이체</span></label>
+</div>
+<label style="display:block;margin-top:16px;font-size:.95rem"><input type="checkbox" id="agree"> 이용약관 및 개인정보 처리방침, 결제 진행에 동의합니다.</label>
+<div class="btns"><button class="btn sub" id="back">← 정보 수정</button><button class="btn" id="payBtn">결제하고 풀이 보기</button></div>
+<p class="note">※ 사주 풀이는 디지털 콘텐츠로, 풀이 확인 후에는 환불이 제한될 수 있습니다. (카페24 연동 시 쇼핑몰 정책에 맞게 문구를 수정하세요.)</p>
+</section>
+
+<!-- STEP 3 : 결과 -->
+<section id="s3" class="hide">
+<div class="card" id="resultCard"></div>
+<div class="btns" style="margin-top:6px">
+<button class="btn" id="saveImg">🖼 이미지로 저장</button>
+<button class="btn sub" id="shareUrl">🔗 URL 공유</button>
+<button class="btn sub" id="again">처음으로</button>
+</div>
+</section>
+</main>
+
+<script>
+/* ===================== 설정 ===================== */
+const PRICE = 9900;          // 풀이 가격(원)
+const DEV_MODE = true;       // true: 테스트 결제(즉시 성공) / 실제 연동 시 false
+const CATS = ['썸','연애','결혼예정','결혼','부부','기타'];
+
+/* ============ 결제 연동 자리 (카페24 등) ============ */
+function requestPayment(order){
+  return new Promise((resolve, reject)=>{
+    if(DEV_MODE){ resolve({success:true, orderId:'TEST-'+Date.now()}); return; }
+    // TODO: 카페24 / PG사 결제 모듈 연동
+    // 1) 서버에서 주문 생성 → 주문번호 발급
+    // 2) PG 결제창 호출 (order.amount, order.item, order.method 사용)
+    // 3) 결제 완료 콜백에서 resolve({success:true, orderId}) 호출
+    // 4) 실패/취소 시 reject(new Error('결제 취소'))
+    reject(new Error('결제 모듈이 아직 연동되지 않았습니다.'));
+  });
+}
+
+/* ===================== 배경 장식 ===================== */
+(function(){
+  const st=document.getElementById('stars');let s='';
+  for(let i=0;i<110;i++){s+=`<circle cx="${Math.random()*1000}" cy="${Math.random()*760}" r="${Math.random()*1.6+.3}" fill="#fff" opacity="${Math.random()*.7+.2}"/>`}
+  st.innerHTML=s;
+  const tri=[[1,1,1],[0,1,1],[1,0,1],[0,0,1],[1,1,0],[0,1,0],[1,0,0],[0,0,0]];
+  let r='<circle cx="500" cy="480" r="345" fill="none" stroke="#e8c872" stroke-width="1.5"/><circle cx="500" cy="480" r="255" fill="none" stroke="#e8c872" stroke-width="1"/>';
+  tri.forEach((t,i)=>{
+    let bars='';
+    t.forEach((b,j)=>{const y=j*17-17;
+      bars+= b?`<rect x="-38" y="${y}" width="76" height="9" fill="#e8c872"/>`
+              :`<rect x="-38" y="${y}" width="32" height="9" fill="#e8c872"/><rect x="6" y="${y}" width="32" height="9" fill="#e8c872"/>`});
+    r+=`<g transform="rotate(${i*45} 500 480) translate(500 ${480-300})">${bars}</g>`;
+  });
+  document.getElementById('ring').innerHTML=r;
+})();
+
+/* ===================== 사주 데이터 ===================== */
+const EL=['목','화','토','금','수'];
+const GK={甲:'갑',乙:'을',丙:'병',丁:'정',戊:'무',己:'기',庚:'경',辛:'신',壬:'임',癸:'계'};
+const ZK={子:'자',丑:'축',寅:'인',卯:'묘',辰:'진',巳:'사',午:'오',未:'미',申:'신',酉:'유',戌:'술',亥:'해'};
+const GE={甲:'목',乙:'목',丙:'화',丁:'화',戊:'토',己:'토',庚:'금',辛:'금',壬:'수',癸:'수'};
+const ZE={子:'수',丑:'토',寅:'목',卯:'목',辰:'토',巳:'화',午:'화',未:'토',申:'금',酉:'금',戌:'토',亥:'수'};
+const COL={목:'#3f7a45',화:'#b3392b',토:'#a8802f',금:'#7d7f86',수:'#2c4f7c'};
+
+const TRAIT={
+甲:'큰 나무(甲木)처럼 곧고 우직합니다. 리더십과 자존심이 강하고, 한번 정한 길은 쉽게 꺾지 않습니다. 다만 융통성이 부족해 보일 수 있으니 굽힐 줄 아는 지혜가 복을 키웁니다.',
+乙:'풀과 덩굴(乙木)처럼 유연하고 적응력이 뛰어납니다. 겉은 부드럽지만 속은 끈질긴 외유내강형이며 눈치가 빠르고 섬세합니다. 때로 남에게 기대려는 마음이 커질 수 있습니다.',
+丙:'태양(丙火)처럼 밝고 열정적이며 솔직합니다. 어디서든 존재감이 있고 사람을 끌어당기지만, 급한 성격과 쉽게 식는 열기는 다스려야 합니다.',
+丁:'촛불(丁火)처럼 따뜻하고 섬세합니다. 집중력과 속정이 깊어 한 사람, 한 가지 일에 오래 마음을 쏟습니다. 예민함이 지나치면 스스로를 지치게 합니다.',
+戊:'큰 산(戊土)처럼 묵직하고 믿음직합니다. 포용력이 크고 중심을 잘 잡지만, 고집이 세고 변화에 느려 기회를 놓치는 일이 생길 수 있습니다.',
+己:'논밭의 흙(己土)처럼 온화하고 실속 있습니다. 배려심이 깊고 조용히 사람을 키워내지만, 걱정이 많고 속으로 삭히는 경향이 있습니다.',
+庚:'바위와 강철(庚金)처럼 결단력 있고 의리가 강합니다. 옳고 그름이 분명하고 추진력이 좋으나, 직선적인 말이 날카롭게 들릴 수 있습니다.',
+辛:'보석(辛金)처럼 섬세하고 깔끔합니다. 안목과 자존심이 높고 완벽을 추구하지만, 예민하고 상처를 오래 기억하는 편입니다.',
+壬:'큰 강과 바다(壬水)처럼 지혜롭고 포용력이 큽니다. 자유로운 사고와 큰 스케일을 가졌으나, 생각이 많아 실행이 늦어지거나 마음이 흘러다닐 수 있습니다.',
+癸:'이슬과 빗물(癸水)처럼 직관적이고 감수성이 풍부합니다. 조용한 가운데 깊은 통찰을 지니지만, 소심해지거나 속마음을 감추는 경향이 있습니다.'};
+
+const EXC={목:'목(木) 기운이 과해 추진력과 고집이 강합니다. 충돌과 조급함을 경계하세요.',화:'화(火) 기운이 과해 열정이 넘치지만 감정 기복과 다툼이 잦을 수 있습니다.',토:'토(土) 기운이 과해 신중함이 지나쳐 변화에 둔하고 고집이 세질 수 있습니다.',금:'금(金) 기운이 과해 판단이 날카롭고 냉정해 보일 수 있습니다. 말을 부드럽게 다듬으세요.',수:'수(水) 기운이 과해 생각과 불안이 많고 결단이 늦어질 수 있습니다.'};
+const LACK={목:'목(木)이 부족해 시작하고 성장하는 힘이 약합니다. 망설임이 길어질 수 있으니 작은 도전부터 시작하세요.',화:'화(火)가 부족해 표현과 열정이 약합니다. 마음을 말과 행동으로 드러내는 연습이 필요합니다.',토:'토(土)가 부족해 중심과 안정감이 약합니다. 생활 리듬과 신뢰를 쌓는 일이 복이 됩니다.',금:'금(金)이 부족해 맺고 끊음이 약합니다. 기준과 원칙을 분명히 세우면 좋습니다.',수:'수(水)가 부족해 유연함과 여유가 부족합니다. 휴식과 지혜로운 거리두기가 필요합니다.'};
+const PERSON={목:'성장 지향적이고 따뜻하며 진취적인 사람',화:'밝고 표현이 풍부하며 열정적인 사람',토:'믿음직하고 안정적이며 포용력 있는 사람',금:'단정하고 결단력 있으며 신의가 깊은 사람',수:'지혜롭고 감성이 깊으며 유연한 사람'};
+const LUCKY={목:['초록색','동쪽','3·8'],화:['붉은색','남쪽','2·7'],토:['황토색·베이지','중앙(집 안 중심)','5·10'],금:['흰색·은색','서쪽','4·9'],수:['검정·남색','북쪽','1·6']};
+
+const STYLE={
+썸:{목:'마음이 생기면 먼저 다가가지만, 상대의 속도를 기다리지 못해 서두르는 모습이 약점입니다.',화:'호감 표현이 솔직하고 분위기를 달아오르게 하는 매력이 큽니다. 다만 열기가 빨리 식으면 상대가 혼란스러워합니다.',토:'진중하게 상대를 살피며 천천히 마음을 엽니다. 신뢰가 쌓이면 깊어지나 표현이 느려 기회를 놓칠 수 있습니다.',금:'감정보다 판단이 앞서 선을 분명히 긋습니다. 쿨해 보여도 한번 인정한 사람에게는 의리를 다합니다.',수:'상대의 마음을 잘 읽고 은근히 끌어당깁니다. 생각이 많아 확신 없이 맴도는 시간이 길 수 있습니다.'},
+연애:{목:'연애에서도 서로를 성장시키는 관계를 원합니다. 간섭이나 통제로 비치지 않게 주의하세요.',화:'표현이 풍부하고 로맨틱해 애정 전달에 능합니다. 감정 기복이 갈등의 씨앗이 됩니다.',토:'안정적이고 한결같은 연애를 합니다. 권태기를 맞기 쉬우니 작은 이벤트가 필요합니다.',금:'약속과 원칙을 중시하는 깔끔한 연애를 합니다. 날카로운 한마디가 상처가 되지 않게 하세요.',수:'정서적 교감을 중시하며 상대를 포용합니다. 혼자만의 시간이 거리감으로 오해받을 수 있습니다.'},
+결혼예정:{목:'결혼 준비를 계획적으로 주도하나, 양가 의견 조율에서는 한발 물러서는 유연함이 필요합니다.',화:'설렘이 크고 준비 과정을 즐기지만, 감정이 앞서 예산과 일정 관리가 느슨해질 수 있습니다.',토:'현실적이고 꼼꼼하게 준비해 큰 탈이 없습니다. 걱정이 많아 사소한 일에 스트레스받기 쉽습니다.',금:'일정과 절차를 칼같이 챙기는 준비형입니다. 완벽을 고집하면 상대와 부딪히니 여지를 두세요.',수:'상대와 가족의 마음을 세심히 살피며 조율합니다. 결정을 미루다 시기를 놓치지 않도록 하세요.'},
+결혼:{목:'가정에서도 성장과 계획을 중시하며 가족을 이끄는 힘이 있습니다.',화:'집안 분위기를 밝게 만드는 힘이 큽니다. 감정을 즉흥적으로 쏟으면 다툼이 커지니 숨 고르기가 필요합니다.',토:'가정의 중심을 잡는 든든한 기둥입니다. 고집이 가정의 변화를 막지 않게 하세요.',금:'책임감이 강하고 가정의 규칙을 잘 세웁니다. 표현이 건조해 정서적 허기를 줄 수 있습니다.',수:'가족을 지혜롭게 품고 융통성 있게 풀어갑니다. 속마음을 숨기면 거리가 생기니 말로 표현하세요.'},
+부부:{목:'서로의 발전을 응원하는 동반자입니다. 훈수는 줄이고 칭찬을 늘리세요.',화:'애정 표현이 부부 관계의 윤활유입니다. 화낼 때 말이 과해지는 것만 다스리면 금슬이 좋습니다.',토:'묵묵히 곁을 지키는 신뢰형 배우자입니다. 말하지 않아도 알겠지 하는 마음이 오해를 만듭니다.',금:'공과 사가 분명한 믿음직한 배우자입니다. 따지기보다 먼저 안아주는 연습이 필요합니다.',수:'배우자의 감정을 깊이 받아줍니다. 혼자 삭히는 불만이 쌓이지 않게 주기적으로 대화하세요.'},
+기타:{목:'이 고민에서도 새로운 시도와 확장이 열쇠입니다. 서두르기보다 뿌리를 먼저 내리세요.',화:'열정과 직관으로 풀어갈 때 길이 열립니다. 감정이 앞설 때는 하루 묵혀 결정하세요.',토:'신중하고 안정적인 접근이 맞습니다. 변화를 두려워하면 기회가 지나갑니다.',금:'명확한 기준과 결단이 도움이 됩니다. 단호함이 사람을 밀어내지 않게 조절하세요.',수:'상황을 넓게 보고 유연하게 대처하는 것이 강점입니다. 생각만 길어지면 때를 놓칠 수 있습니다.'}};
+
+const YEAR=['올해는 나와 같은 기운이 들어와 주변 사람, 경쟁자와의 관계가 활발해집니다. {f}에서 주관이 강해지니 상대 의견을 듣는 여유가 중요합니다.',
+'올해는 표현과 재능의 기운이 흐릅니다. {f}에서 마음을 말과 행동으로 드러낼수록 길합니다. 다만 말실수는 조심하세요.',
+'올해는 현실적 성과와 인연의 기운이 들어옵니다. {f}에서 구체적인 결실이나 새로운 기회가 열리지만 욕심은 경계하세요.',
+'올해는 책임과 규율의 기운이 강합니다. {f}에서 시험대에 오르는 느낌이 들 수 있으나, 성실히 대응하면 신뢰와 안정으로 이어집니다.',
+'올해는 도움과 배움의 기운이 감쌉니다. {f}에서 주변의 조언과 귀인이 힘이 되며 마음이 차분해집니다. 의존만 경계하세요.'];
+const FOCUS={썸:'썸 관계의 진전',연애:'연애운',결혼예정:'결혼 준비와 결정',결혼:'결혼 생활',부부:'부부 관계'};
+const STAR=['배우자 인연의 별이 원국에 드러나지 않아 인연이 늦게 오거나 운이 들어올 때 크게 작용합니다. 서두르지 않는 편이 좋습니다.',
+'배우자 별이 하나로 뚜렷하여 인연이 한 사람에게 집중되는 안정적인 구조입니다.',
+'배우자 별이 많아 이성 인연이 풍부하지만 마음이 흔들릴 수 있습니다. 선택의 기준을 분명히 세우세요.'];
+const ADV={
+썸:['연락의 빈도보다 진심이 느껴지는 한마디가 중요합니다.','확답을 재촉하지 말고 만남의 횟수를 늘려 자연스러운 흐름을 만드세요.','상대의 속도를 존중하되, 서너 번째 만남에서는 마음을 표현하세요.'],
+연애:['갈등 시 즉시 결론내기보다 감정이 가라앉은 뒤 대화하세요.','기념일과 작은 습관이 관계를 오래 지킵니다.','바라는 점은 불평이 아닌 부탁의 형태로 전하세요.'],
+결혼예정:['양가 이야기는 두 사람이 먼저 합의한 뒤 전달하세요.','예산과 역할 분담은 문서로 정리해 두면 다툼이 줄어듭니다.','결혼 직전의 불안은 자연스러운 것이니 서로 솔직히 나누세요.'],
+결혼:['결혼 초 3년은 생활 방식 맞춤이 핵심입니다. 작은 규칙부터 함께 정하세요.','각자의 시간과 함께하는 시간의 균형을 지키세요.','재정 관리는 투명하게 공유하세요.'],
+부부:['하루 10분 안부 대화를 습관으로 만드세요.','서운함은 쌓아두지 말고 그날 가볍게 풀어내세요.','함께하는 새로운 경험(여행·취미)이 권태를 막아줍니다.'],
+기타:['결정을 앞두고 있다면 핵심 기준 세 가지를 먼저 적어보세요.','주변 조언을 듣되 최종 선택은 스스로 책임지세요.','흐름이 좋을 때 시작하고, 막힐 때는 정비하는 시간으로 삼으세요.']};
+
+/* ===================== 계산 ===================== */
+function calc(o){
+  const h=o.t==='x'?12:+o.t;
+  const lunar = o.cal==='solar'
+    ? Solar.fromYmdHms(o.y,o.m,o.d,h,0,0).getLunar()
+    : Lunar.fromYmdHms(o.y,o.leap?-o.m:o.m,o.d,h,0,0);
+  const ec=lunar.getEightChar();
+  const raw=[ec.getYear(),ec.getMonth(),ec.getDay(),ec.getTime()];
+  const nm=['년주','월주','일주','시주'];
+  const ps=raw.map((s,i)=>({name:nm[i],gan:s[0],zhi:s[1],skip:i===3&&o.t==='x'}));
+  const cnt={목:0,화:0,토:0,금:0,수:0};
+  ps.forEach(p=>{if(p.skip)return;cnt[GE[p.gan]]++;cnt[ZE[p.zhi]]++;});
+  const yg=Lunar.fromDate(new Date()).getYearInGanZhiByLiChun();
+  return {ps,cnt,dm:ps[2].gan,dmEl:GE[ps[2].gan],yg,lunarStr:lunar.toString()};
+}
+
+/* ===================== 풀이 생성 ===================== */
+function build(o,r){
+  const {ps,cnt,dm,dmEl,yg}=r;
+  const cat=o.cat, label=cat==='기타'?(o.custom||'기타 고민'):cat;
+  const tot=Object.values(cnt).reduce((a,b)=>a+b,0);
+  const dI=EL.indexOf(dmEl);
+  const sec=(t,b)=>`<h3>${t}</h3>${b}`;
+  const p=t=>`<p>${t}</p>`;
+
+  const pil=[...ps].reverse().map(x=>x.skip
+    ?`<div><em>${x.name}</em><span class="h" style="opacity:.3">?</span><span class="k">시간 미상</span></div>`
+    :`<div><em>${x.name}</em><span class="h"><span style="color:${COL[GE[x.gan]]}">${x.gan}</span><span style="color:${COL[ZE[x.zhi]]}">${x.zhi}</span></span><span class="k">${GK[x.gan]}${ZK[x.zhi]} · ${GE[x.gan]}/${ZE[x.zhi]}</span></div>`).join('');
+
+  const bars=EL.map(e=>`<div class="bar"><b style="width:28px">${e}</b><i style="width:${tot?cnt[e]/tot*100*2.2:0}%;background:${COL[e]};min-width:${cnt[e]?6:0}px"></i><span>${cnt[e]}</span></div>`).join('');
+
+  const exc=EL.filter(e=>cnt[e]>=4), lack=EL.filter(e=>cnt[e]===0);
+  let bal='';
+  exc.forEach(e=>bal+=p('▲ '+EXC[e])); lack.forEach(e=>bal+=p('▽ '+LACK[e]));
+  if(!bal) bal=p('오행이 비교적 고르게 분포되어 큰 치우침 없이 안정적인 구조입니다. 상황에 따라 유연하게 힘을 쓸 수 있는 것이 장점입니다.');
+
+  const minV=Math.min(...EL.map(e=>cnt[e]));
+  const need=EL.filter(e=>cnt[e]===minV).sort((a,b)=>((EL.indexOf(a)-dI+5)%5===4?-1:0)-((EL.indexOf(b)-dI+5)%5===4?-1:0))[0];
+
+  const rel=(EL.indexOf(GE[yg[0]])-dI+5)%5;
+  const f=FOCUS[cat]||label;
+
+  let spouse='';
+  if(cat!=='기타'){
+    const se=EL[(dI+(o.g==='남'?2:3))%5];
+    const c=cnt[se]; 
+    spouse=sec(`${o.g==='남'?'재성(財星)':'관성(官星)'} · 인연의 별`,p(`${o.g==='남'?'남성':'여성'}의 배우자 인연을 보는 ${se}(${o.g==='남'?'재성':'관성'}) 기운은 원국에 ${c}개입니다. `+STAR[Math.min(c,2)]));
+  }
+
+  return `
+  <div class="rtitle"><b>${o.name}님의 ${label} 사주풀이</b>
+  <small>${o.cal==='solar'?'양력':'음력'+(o.leap?'(윤달)':'')} ${o.y}.${o.m}.${o.d} · ${o.t==='x'?'시간 미상':'출생시 '+o.t+'시경'} · ${o.g}성 (음력 환산: ${r.lunarStr})</small></div>
+  <div class="rs">
+  ${sec('四柱 · 사주 원국',`<div class="pil">${pil}</div>`+p(`일간(日干)은 <b>${dm}(${GK[dm]})</b>, 오행으로 <b>${dmEl}</b>입니다. 사주에서 일간은 곧 '나 자신'을 뜻합니다.`))}
+  ${sec('五行 · 오행 분포',bars+bal)}
+  ${sec('타고난 기질',p(TRAIT[dm]))}
+  ${sec(`${label} 속 나의 모습`,p(STYLE[cat][dmEl]))}
+  ${spouse}
+  ${cat!=='기타'?sec('잘 맞는 상대',p(`사주에서 가장 부족한 ${need}(${need}) 기운을 채워주는, <b>${PERSON[need]}</b>과 만나면 서로의 균형이 맞아 편안함을 느낍니다. 겉으로 닮은 사람보다 내가 부족한 부분을 자연스럽게 채워주는 사람이 인연입니다.`)):''}
+  ${sec(`${yg}년 · 올해의 ${label} 흐름`,p(YEAR[rel].replace('{f}',f)))}
+  ${sec(`${label} 조언`,ADV[cat].map(p).join(''))}
+  ${sec('개운법 (행운 요소)',p(`보완 오행인 ${need}의 기운을 가까이 하세요. 행운의 색: <b>${LUCKY[need][0]}</b> / 길한 방향: <b>${LUCKY[need][1]}</b> / 행운의 숫자: <b>${LUCKY[need][2]}</b>`))}
+  </div>
+  <div class="foot">※ 본 풀이는 명리학 기본 원리에 따른 참고용 콘텐츠이며, 삶의 방향은 본인의 선택이 가장 중요합니다.<br>天命 · 사주풀이</div>`;
+}
+
+/* ===================== UI ===================== */
+const $=s=>document.querySelector(s);
+let cur=null;
+const go=n=>{['s1','s2','s3'].forEach((id,i)=>$('#'+id).classList.toggle('hide',i!==n-1));window.scrollTo({top:0,behavior:'smooth'})};
+const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)};
+
+$('#cats').innerHTML=CATS.map((c,i)=>`<label class="chip"><input type="radio" name="cat" value="${c}" ${i===1?'checked':''}><span>${c==='기타'?'기타(직접입력)':c}</span></label>`).join('');
+document.querySelectorAll('input[name=cat]').forEach(e=>e.onchange=()=>$('#custom').classList.toggle('hide',document.querySelector('input[name=cat]:checked').value!=='기타'));
+document.querySelectorAll('input[name=cal]').forEach(e=>e.onchange=()=>{const l=document.querySelector('input[name=cal]:checked').value==='lunar';$('#leapWrap').classList.toggle('hide',!l);if(!l)$('#leap').checked=false});
+
+$('#f').onsubmit=e=>{
+  e.preventDefault();
+  const [y,m,d]=$('#birth').value.split('-').map(Number);
+  const cat=document.querySelector('input[name=cat]:checked').value;
+  if(cat==='기타'&&!$('#custom').value.trim()){toast('기타 내용을 입력해 주세요');return}
+  cur={name:$('#name').value.trim(),cal:document.querySelector('input[name=cal]:checked').value,leap:$('#leap').checked,y,m,d,t:$('#time').value,g:document.querySelector('input[name=g]:checked').value,cat,custom:$('#custom').value.trim()};
+  try{calc(cur)}catch(err){toast('날짜를 다시 확인해 주세요 (음력 날짜/윤달 여부)');return}
+  $('#pItem').textContent=(cat==='기타'?'기타('+cur.custom+')':cat)+' 사주 상세풀이';
+  $('#pName').textContent=cur.name;
+  $('#pPrice').textContent=PRICE.toLocaleString()+'원';
+  go(2);
+};
+$('#back').onclick=()=>go(1);
+
+$('#payBtn').onclick=async()=>{
+  if(!$('#agree').checked){toast('약관 동의가 필요합니다');return}
+  try{
+    const res=await requestPayment({amount:PRICE,item:$('#pItem').textContent,method:document.querySelector('input[name=pay]:checked').value,buyer:cur.name});
+    if(res.success) show();
+  }catch(err){toast(err.message||'결제에 실패했습니다')}
+};
+
+function show(){
+  $('#resultCard').innerHTML=build(cur,calc(cur));
+  go(3);
+}
+
+$('#saveImg').onclick=async()=>{
+  toast('이미지를 만드는 중...');
+  try{
+    const cv=await html2canvas($('#resultCard'),{scale:2,backgroundColor:'#f1e6cc',useCORS:true});
+    const a=document.createElement('a');
+    a.download=`사주풀이_${cur.name}.png`;a.href=cv.toDataURL('image/png');a.click();
+  }catch(e){toast('이미지 저장에 실패했습니다')}
+};
+
+$('#shareUrl').onclick=async()=>{
+  const q=new URLSearchParams({n:cur.name,c:cur.cal,l:cur.leap?1:0,y:cur.y,m:cur.m,d:cur.d,t:cur.t,g:cur.g,k:cur.cat,x:cur.custom,share:1});
+  const url=location.origin+location.pathname+'?'+q.toString();
+  if(navigator.share){try{await navigator.share({title:`${cur.name}님의 사주풀이`,text:'天命 사주풀이 결과',url});return}catch(e){}}
+  try{await navigator.clipboard.writeText(url);toast('링크가 복사되었습니다')}
+  catch(e){prompt('아래 링크를 복사하세요',url)}
+};
+
+$('#again').onclick=()=>{history.replaceState(null,'',location.pathname);go(1)};
+
+/* 공유 링크로 접속 시 결과 바로 표시 */
+(function(){
+  const q=new URLSearchParams(location.search);
+  if(q.get('share')!=='1'||!q.get('y'))return;
+  cur={name:q.get('n')||'',cal:q.get('c')||'solar',leap:q.get('l')==='1',y:+q.get('y'),m:+q.get('m'),d:+q.get('d'),t:q.get('t')||'x',g:q.get('g')||'남',cat:q.get('k')||'연애',custom:q.get('x')||''};
+  try{show()}catch(e){go(1)}
+})();
+</script>
+</body>
+</html>
