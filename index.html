@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>天命 · 사주풀이</title>
+<title>天命 · 사주궁합</title>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.6.12/lunar.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-:root{--ink:#1a1411;--paper:#f1e6cc;--paper2:#e7d8b5;--red:#9b2d20;--gold:#b8913b;--line:#c9b68a}
+:root{--ink:#1a1411;--paper:#f1e6cc;--red:#9b2d20;--gold:#b8913b;--line:#c9b68a}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Gungsuh','궁서','Nanum Myeongjo',serif;color:var(--ink);min-height:100vh;background:#0d0a14;line-height:1.85;font-size:17px}
 .bg{position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 20%,#2a1f3d 0%,#14101f 55%,#07050c 100%)}
@@ -21,6 +21,8 @@ header p{opacity:.8;letter-spacing:.2em;font-size:.95rem;margin-top:6px}
 main{max-width:720px;margin:0 auto;padding:12px 16px 60px}
 .card{background:var(--paper);background-image:repeating-linear-gradient(0deg,rgba(120,90,40,.04) 0 2px,transparent 2px 5px);border:2px solid var(--gold);outline:6px double rgba(184,145,59,.35);outline-offset:4px;border-radius:4px;padding:30px 26px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
 .card h2{text-align:center;color:var(--red);font-size:1.5rem;margin-bottom:18px;letter-spacing:.15em}
+.part{margin-top:28px;padding-top:6px;border-top:2px solid var(--gold);text-align:center;color:var(--red);font-weight:800;font-size:1.2rem;letter-spacing:.15em}
+.part small{display:block;font-size:.82rem;color:var(--ink);opacity:.65;font-weight:400;letter-spacing:0}
 label.t{display:block;font-weight:800;margin:18px 0 6px;font-size:1.02rem}
 input[type=text],input[type=date],select{width:100%;padding:12px;border:1.5px solid var(--line);background:#fbf5e4;font:inherit;font-size:1.02rem;color:var(--ink);border-radius:3px}
 .row{display:flex;gap:10px;flex-wrap:wrap}
@@ -39,7 +41,8 @@ input[type=text],input[type=date],select{width:100%;padding:12px;border:1.5px so
 .note{font-size:.85rem;opacity:.7;margin-top:10px;line-height:1.6}
 /* result */
 .rtitle{text-align:center;border-bottom:2px solid var(--gold);padding-bottom:14px;margin-bottom:6px}
-.rtitle b{font-size:1.45rem;color:var(--red)}.rtitle small{display:block;opacity:.75}
+.rtitle b{font-size:1.45rem;color:var(--red)}.rtitle small{display:block;opacity:.75;margin-top:4px}
+.who{text-align:center;background:var(--red);color:#fff;padding:6px;margin:26px 0 4px;letter-spacing:.15em;font-size:1.1rem}
 .pil{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
 .pil div{text-align:center;border:1.5px solid var(--line);background:#fbf5e4;padding:10px 4px}
 .pil em{display:block;font-style:normal;font-size:.8rem;opacity:.7}
@@ -48,12 +51,15 @@ input[type=text],input[type=date],select{width:100%;padding:12px;border:1.5px so
 .bar{display:flex;align-items:center;gap:8px;margin:5px 0}.bar i{display:block;height:14px;border-radius:2px}
 .rs h3{color:var(--red);margin:24px 0 6px;font-size:1.15rem;border-left:5px solid var(--gold);padding-left:10px}
 .rs p{margin:6px 0;word-break:keep-all}
+.score{text-align:center;border:2px solid var(--gold);background:#fbf5e4;padding:18px;margin:14px 0}
+.score b{font-size:3.4rem;color:var(--red);line-height:1}.score span{font-size:1.2rem}
+.score small{display:block;font-size:1.1rem;font-weight:800;margin-top:6px}
 .foot{text-align:center;font-size:.8rem;opacity:.65;margin-top:26px;border-top:1px solid var(--line);padding-top:10px}
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#000c;color:#fff;padding:12px 22px;border-radius:30px;z-index:9;font-family:sans-serif;font-size:.95rem}
 </style>
 </head>
 <body>
-<div class="bg"><svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" id="bgsvg">
+<div class="bg"><svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice">
 <defs><radialGradient id="moon"><stop offset="0" stop-color="#fff6d8"/><stop offset="1" stop-color="#e8c872"/></radialGradient></defs>
 <g id="stars"></g>
 <circle cx="500" cy="480" r="150" fill="url(#moon)" opacity=".16"/>
@@ -63,16 +69,17 @@ input[type=text],input[type=date],select{width:100%;padding:12px;border:1.5px so
 <path d="M0,1000V900Q150,830 300,890T600,870T850,900T1000,860V1000Z" fill="#05040a"/>
 </svg></div>
 
-<header><h1>天命 · 사주</h1><p>하늘이 내린 인연의 길을 살펴봅니다</p></header>
+<header><h1>天命 · 사주궁합</h1><p>두 사람의 인연을 하늘의 이치로 살펴봅니다</p></header>
 
 <main>
 <!-- STEP 1 : 정보 입력 -->
 <section id="s1" class="card">
 <h2>生辰 入力 · 정보 입력</h2>
 <form id="f">
+
+<div class="part" style="border:none;margin-top:0">◈ 나의 정보</div>
 <label class="t">성함</label>
 <input type="text" id="name" placeholder="성함을 입력하세요" required maxlength="20">
-
 <label class="t">생년월일</label>
 <div class="row" style="margin-bottom:8px">
 <label class="chip"><input type="radio" name="cal" value="solar" checked><span>양력</span></label>
@@ -80,27 +87,35 @@ input[type=text],input[type=date],select{width:100%;padding:12px;border:1.5px so
 <label class="chip hide" id="leapWrap"><input type="checkbox" id="leap"><span>윤달</span></label>
 </div>
 <input type="date" id="birth" min="1900-01-01" max="2100-12-31" required>
-
 <label class="t">태어난 시간</label>
-<select id="time">
-<option value="x">모름 (시주 제외)</option>
-<option value="0">자시 (23:30~01:29)</option><option value="2">축시 (01:30~03:29)</option>
-<option value="4">인시 (03:30~05:29)</option><option value="6">묘시 (05:30~07:29)</option>
-<option value="8">진시 (07:30~09:29)</option><option value="10">사시 (09:30~11:29)</option>
-<option value="12">오시 (11:30~13:29)</option><option value="14">미시 (13:30~15:29)</option>
-<option value="16">신시 (15:30~17:29)</option><option value="18">유시 (17:30~19:29)</option>
-<option value="20">술시 (19:30~21:29)</option><option value="22">해시 (21:30~23:29)</option>
-</select>
-
+<select id="time"></select>
 <label class="t">성별</label>
 <div class="row">
 <label class="chip"><input type="radio" name="g" value="남" checked><span>남성</span></label>
 <label class="chip"><input type="radio" name="g" value="여"><span>여성</span></label>
 </div>
 
-<label class="t">풀이 카테고리</label>
-<div class="row" id="cats"></div>
-<input type="text" id="custom" class="hide" style="margin-top:10px" placeholder="궁금한 내용을 직접 입력하세요 (예: 재회, 짝사랑, 이직 후 연애)" maxlength="60">
+<div class="part">◈ 상대방 정보<small id="pHint">상대방의 정보를 입력하면 두 사람의 궁합까지 풀이합니다</small></div>
+<label class="t">상대방 성함</label>
+<input type="text" id="pname" placeholder="상대방 성함 (별명도 가능)" maxlength="20">
+<label class="t">상대방 생년월일</label>
+<div class="row" style="margin-bottom:8px">
+<label class="chip"><input type="radio" name="pcal" value="solar" checked><span>양력</span></label>
+<label class="chip"><input type="radio" name="pcal" value="lunar"><span>음력</span></label>
+<label class="chip hide" id="pleapWrap"><input type="checkbox" id="pleap"><span>윤달</span></label>
+</div>
+<input type="date" id="pbirth" min="1900-01-01" max="2100-12-31">
+<label class="t">상대방 태어난 시간</label>
+<select id="ptime"></select>
+<label class="t">상대방 성별</label>
+<div class="row">
+<label class="chip"><input type="radio" name="pg" value="남"><span>남성</span></label>
+<label class="chip"><input type="radio" name="pg" value="여" checked><span>여성</span></label>
+</div>
+
+<div class="part">◈ 풀이 카테고리</div>
+<div class="row" id="cats" style="margin-top:12px"></div>
+<input type="text" id="custom" class="hide" style="margin-top:10px" placeholder="궁금한 내용을 직접 입력하세요 (예: 재회, 짝사랑, 동업)" maxlength="60">
 
 <button class="btn" type="submit">다음 · 결제하기</button>
 </form>
@@ -111,7 +126,7 @@ input[type=text],input[type=date],select{width:100%;padding:12px;border:1.5px so
 <h2>結制 · 결제</h2>
 <div class="sum">
 <div><span>상품</span><b id="pItem"></b></div>
-<div><span>성함</span><span id="pName"></span></div>
+<div><span>대상</span><span id="pName"></span></div>
 <div><span>결제 금액</span><span class="price" id="pPrice"></span></div>
 </div>
 <label class="t">결제 수단</label>
@@ -138,6 +153,7 @@ input[type=text],input[type=date],select{width:100%;padding:12px;border:1.5px so
 </main>
 
 <script>
+const $=s=>document.querySelector(s);
 /* ===================== 설정 ===================== */
 const PRICE = 9900;          // 풀이 가격(원)
 const DEV_MODE = true;       // true: 테스트 결제(즉시 성공) / 실제 연동 시 false
@@ -158,9 +174,9 @@ function requestPayment(order){
 
 /* ===================== 배경 장식 ===================== */
 (function(){
-  const st=document.getElementById('stars');let s='';
+  let s='';
   for(let i=0;i<110;i++){s+=`<circle cx="${Math.random()*1000}" cy="${Math.random()*760}" r="${Math.random()*1.6+.3}" fill="#fff" opacity="${Math.random()*.7+.2}"/>`}
-  st.innerHTML=s;
+  document.getElementById('stars').innerHTML=s;
   const tri=[[1,1,1],[0,1,1],[1,0,1],[0,0,1],[1,1,0],[0,1,0],[1,0,0],[0,0,0]];
   let r='<circle cx="500" cy="480" r="345" fill="none" stroke="#e8c872" stroke-width="1.5"/><circle cx="500" cy="480" r="255" fill="none" stroke="#e8c872" stroke-width="1"/>';
   tri.forEach((t,i)=>{
@@ -179,6 +195,7 @@ const GK={甲:'갑',乙:'을',丙:'병',丁:'정',戊:'무',己:'기',庚:'경',
 const ZK={子:'자',丑:'축',寅:'인',卯:'묘',辰:'진',巳:'사',午:'오',未:'미',申:'신',酉:'유',戌:'술',亥:'해'};
 const GE={甲:'목',乙:'목',丙:'화',丁:'화',戊:'토',己:'토',庚:'금',辛:'금',壬:'수',癸:'수'};
 const ZE={子:'수',丑:'토',寅:'목',卯:'목',辰:'토',巳:'화',午:'화',未:'토',申:'금',酉:'금',戌:'토',亥:'수'};
+const ZODIAC={子:'쥐',丑:'소',寅:'호랑이',卯:'토끼',辰:'용',巳:'뱀',午:'말',未:'양',申:'원숭이',酉:'닭',戌:'개',亥:'돼지'};
 const COL={목:'#3f7a45',화:'#b3392b',토:'#a8802f',금:'#7d7f86',수:'#2c4f7c'};
 
 const TRAIT={
@@ -223,6 +240,29 @@ const ADV={
 부부:['하루 10분 안부 대화를 습관으로 만드세요.','서운함은 쌓아두지 말고 그날 가볍게 풀어내세요.','함께하는 새로운 경험(여행·취미)이 권태를 막아줍니다.'],
 기타:['결정을 앞두고 있다면 핵심 기준 세 가지를 먼저 적어보세요.','주변 조언을 듣되 최종 선택은 스스로 책임지세요.','흐름이 좋을 때 시작하고, 막힐 때는 정비하는 시간으로 삼으세요.']};
 
+/* ---------- 궁합용 데이터 ---------- */
+const GANHE={甲:'己',己:'甲',乙:'庚',庚:'乙',丙:'辛',辛:'丙',丁:'壬',壬:'丁',戊:'癸',癸:'戊'};
+const LIUHE={子:'丑',丑:'子',寅:'亥',亥:'寅',卯:'戌',戌:'卯',辰:'酉',酉:'辰',巳:'申',申:'巳',午:'未',未:'午'};
+const CHONG={子:'午',午:'子',丑:'未',未:'丑',寅:'申',申:'寅',卯:'酉',酉:'卯',辰:'戌',戌:'辰',巳:'亥',亥:'巳'};
+const SANHE=['申子辰','亥卯未','寅午戌','巳酉丑'];
+const zrel=(a,b)=>LIUHE[a]===b?'합':CHONG[a]===b?'충':(a!==b&&SANHE.some(g=>g.includes(a)&&g.includes(b)))?'삼합':'none';
+
+const REL=[
+'{a}님과 {b}님은 같은 오행의 기운으로 서로의 마음을 거울처럼 이해합니다. 공감대가 크지만 같은 약점이 겹쳐 부딪히면 서로 양보하기 어려울 수 있습니다.',
+'{a}님의 기운이 {b}님을 살려주는 관계입니다. {a}님이 베풀고 챙기는 쪽이 되기 쉽고 {b}님은 편안함과 성장을 얻습니다. {a}님이 지치지 않도록 {b}님의 감사 표현이 필요합니다.',
+'{a}님이 {b}님을 이끌고 다스리는 구도입니다. {a}님은 주도권을 쥐기 쉽고 {b}님은 압박을 느낄 수 있으니, {a}님이 말투와 요구를 부드럽게 해야 오래갑니다.',
+'{b}님의 기운이 {a}님을 누르는 구도입니다. {a}님은 {b}님에게 긴장과 존경을 함께 느끼며 끌리지만 눌린다는 기분이 들 수 있습니다. {b}님이 배려하면 안정적인 관계가 됩니다.',
+'{b}님의 기운이 {a}님을 살려주는 관계입니다. {a}님은 {b}님 곁에서 안정감과 힘을 얻습니다. {a}님이 받기만 하지 않고 마음을 돌려주면 균형이 맞습니다.'];
+const CONF={목:'의견이 부딪히면 끝까지 밀어붙이려 하고',화:'감정이 확 올라왔다가 금세 식고',토:'입을 닫고 고집을 부리고',금:'날카롭게 시시비비를 따지고',수:'말없이 거리를 두고 생각에 잠기고'};
+const TIPS={목:'성장과 자율을 존중해 주고, 하고 싶은 일을 응원해 주세요.',화:'작은 노력도 인정하고 칭찬해 주세요. 감정 표현을 받아주는 것이 중요합니다.',토:'약속을 지키고 한결같은 모습을 보여주세요. 결정을 재촉하지 말고 기다려 주세요.',금:'말과 행동의 일관성을 지키고, 원칙과 개인 영역을 존중해 주세요.',수:'대화할 시간과 혼자 있을 시간을 모두 존중해 주세요. 속마음을 편히 말할 분위기가 필요합니다.'};
+const CATC={
+썸:['썸 단계에서 이미 끌림이 강한 조합입니다. 서로의 신호를 놓치지 말고, 마음이 무르익은 시점에 먼저 솔직히 표현하는 쪽이 관계를 앞당깁니다.','천천히 알아갈수록 좋아지는 조합입니다. 서두른 확답보다 만남을 쌓아 편안함을 만든 뒤 고백하는 것이 유리합니다.','처음엔 엇갈림이 있을 수 있는 조합입니다. 상대의 속도와 표현 방식을 파악하기 전까지는 기대를 낮추고 대화를 늘려보세요.'],
+연애:['연애하면 서로에게 큰 힘이 되는 조합입니다. 편안함에 익숙해져 소홀해지지 않도록 기념일과 표현을 챙기세요.','장점과 단점이 공존하는 조합입니다. 다툼 후 먼저 화해하는 규칙을 만들면 관계가 단단해집니다.','성향 차이가 뚜렷해 마찰이 잦을 수 있습니다. 바꾸려 하기보다 이해하려는 태도가 관계를 지켜줍니다.'],
+결혼예정:['결혼으로 이어졌을 때 시너지가 큰 조합입니다. 준비 과정의 사소한 의견 차이도 대화로 풀며 좋은 흐름을 이어가세요.','결혼 준비 중 역할과 가치관을 미리 맞추면 안정적으로 나아갈 수 있습니다. 돈, 양가, 거주지는 반드시 사전에 합의하세요.','결혼 전 충분히 서로를 알아가는 시간이 필요한 조합입니다. 중요한 결정은 서두르지 말고 서로의 불안을 솔직히 나누세요.'],
+결혼:['가정을 함께 꾸려가기에 좋은 조합입니다. 서로의 역할을 존중하면 시간이 갈수록 신뢰가 깊어집니다.','생활 습관이 달라 맞춰가는 시간이 필요하지만, 규칙을 함께 세우면 안정적인 가정이 됩니다.','생활 방식과 가치관의 차이가 클 수 있어 서로의 영역을 존중하는 연습이 꼭 필요합니다.'],
+부부:['오랜 시간이 지나도 서로를 지탱하는 힘이 있는 부부입니다. 익숙함이 무관심이 되지 않도록 대화를 이어가세요.','좋을 때와 힘들 때의 기복이 있지만 대화로 풀면 금슬이 깊어지는 부부입니다.','다툼이 반복되기 쉬운 조합이므로 감정이 올라올 때 한 박자 쉬고, 필요하면 전문가 상담 같은 도움도 열린 마음으로 고려해 보세요.'],
+기타:['이 문제에서 서로 도움이 되는 좋은 조합입니다. 역할을 나누어 서로의 강점을 활용하세요.','서로 보완하면 좋은 결과를 낼 수 있는 조합입니다. 기대와 역할을 먼저 확인하세요.','관점 차이가 커서 오해가 생기기 쉽습니다. 소통 방식을 먼저 맞추는 것이 중요합니다.']};
+
 /* ===================== 계산 ===================== */
 function calc(o){
   const h=o.t==='x'?12:+o.t;
@@ -240,74 +280,136 @@ function calc(o){
 }
 
 /* ===================== 풀이 생성 ===================== */
-function build(o,r){
+const sec=(t,b)=>`<h3>${t}</h3>${b}`;
+const P=t=>`<p>${t}</p>`;
+const info=o=>`${o.cal==='solar'?'양력':'음력'+(o.leap?'(윤달)':'')} ${o.y}.${o.m}.${o.d} · ${o.t==='x'?'시간 미상':o.t+'시경'} · ${o.g}성`;
+
+function personBlock(o,r,cat,label,isMe){
   const {ps,cnt,dm,dmEl,yg}=r;
-  const cat=o.cat, label=cat==='기타'?(o.custom||'기타 고민'):cat;
   const tot=Object.values(cnt).reduce((a,b)=>a+b,0);
   const dI=EL.indexOf(dmEl);
-  const sec=(t,b)=>`<h3>${t}</h3>${b}`;
-  const p=t=>`<p>${t}</p>`;
-
   const pil=[...ps].reverse().map(x=>x.skip
     ?`<div><em>${x.name}</em><span class="h" style="opacity:.3">?</span><span class="k">시간 미상</span></div>`
     :`<div><em>${x.name}</em><span class="h"><span style="color:${COL[GE[x.gan]]}">${x.gan}</span><span style="color:${COL[ZE[x.zhi]]}">${x.zhi}</span></span><span class="k">${GK[x.gan]}${ZK[x.zhi]} · ${GE[x.gan]}/${ZE[x.zhi]}</span></div>`).join('');
-
-  const bars=EL.map(e=>`<div class="bar"><b style="width:28px">${e}</b><i style="width:${tot?cnt[e]/tot*100*2.2:0}%;background:${COL[e]};min-width:${cnt[e]?6:0}px"></i><span>${cnt[e]}</span></div>`).join('');
-
+  const bars=EL.map(e=>`<div class="bar"><b style="width:28px">${e}</b><i style="width:${tot?cnt[e]/tot*220:0}%;background:${COL[e]};min-width:${cnt[e]?6:0}px"></i><span>${cnt[e]}</span></div>`).join('');
   const exc=EL.filter(e=>cnt[e]>=4), lack=EL.filter(e=>cnt[e]===0);
   let bal='';
-  exc.forEach(e=>bal+=p('▲ '+EXC[e])); lack.forEach(e=>bal+=p('▽ '+LACK[e]));
-  if(!bal) bal=p('오행이 비교적 고르게 분포되어 큰 치우침 없이 안정적인 구조입니다. 상황에 따라 유연하게 힘을 쓸 수 있는 것이 장점입니다.');
-
+  exc.forEach(e=>bal+=P('▲ '+EXC[e])); lack.forEach(e=>bal+=P('▽ '+LACK[e]));
+  if(!bal) bal=P('오행이 비교적 고르게 분포되어 큰 치우침 없이 안정적인 구조입니다.');
   const minV=Math.min(...EL.map(e=>cnt[e]));
-  const need=EL.filter(e=>cnt[e]===minV).sort((a,b)=>((EL.indexOf(a)-dI+5)%5===4?-1:0)-((EL.indexOf(b)-dI+5)%5===4?-1:0))[0];
-
+  const need=EL.filter(e=>cnt[e]===minV)[0];
   const rel=(EL.indexOf(GE[yg[0]])-dI+5)%5;
   const f=FOCUS[cat]||label;
-
   let spouse='';
   if(cat!=='기타'){
-    const se=EL[(dI+(o.g==='남'?2:3))%5];
-    const c=cnt[se]; 
-    spouse=sec(`${o.g==='남'?'재성(財星)':'관성(官星)'} · 인연의 별`,p(`${o.g==='남'?'남성':'여성'}의 배우자 인연을 보는 ${se}(${o.g==='남'?'재성':'관성'}) 기운은 원국에 ${c}개입니다. `+STAR[Math.min(c,2)]));
+    const se=EL[(dI+(o.g==='남'?2:3))%5], c=cnt[se];
+    spouse=sec(`${o.g==='남'?'재성(財星)':'관성(官星)'} · 인연의 별`,P(`${o.g==='남'?'남성':'여성'}의 배우자 인연을 보는 ${se} 기운은 원국에 ${c}개입니다. `+STAR[Math.min(c,2)]));
   }
-
-  return `
-  <div class="rtitle"><b>${o.name}님의 ${label} 사주풀이</b>
-  <small>${o.cal==='solar'?'양력':'음력'+(o.leap?'(윤달)':'')} ${o.y}.${o.m}.${o.d} · ${o.t==='x'?'시간 미상':'출생시 '+o.t+'시경'} · ${o.g}성 (음력 환산: ${r.lunarStr})</small></div>
-  <div class="rs">
-  ${sec('四柱 · 사주 원국',`<div class="pil">${pil}</div>`+p(`일간(日干)은 <b>${dm}(${GK[dm]})</b>, 오행으로 <b>${dmEl}</b>입니다. 사주에서 일간은 곧 '나 자신'을 뜻합니다.`))}
+  return `<div class="who">◈ ${isMe?'나':'상대'} · ${o.name}</div>
+  ${sec('四柱 · 사주 원국',`<div class="pil">${pil}</div>`+P(`${o.name}님의 일간(日干)은 <b>${dm}(${GK[dm]})</b>, 오행으로 <b>${dmEl}</b>입니다. 일간은 곧 '나 자신'을 뜻합니다.`))}
   ${sec('五行 · 오행 분포',bars+bal)}
-  ${sec('타고난 기질',p(TRAIT[dm]))}
-  ${sec(`${label} 속 나의 모습`,p(STYLE[cat][dmEl]))}
+  ${sec('타고난 기질',P(TRAIT[dm]))}
+  ${sec(`${label} 속 ${o.name}님의 모습`,P(STYLE[cat][dmEl]))}
   ${spouse}
-  ${cat!=='기타'?sec('잘 맞는 상대',p(`사주에서 가장 부족한 ${need}(${need}) 기운을 채워주는, <b>${PERSON[need]}</b>과 만나면 서로의 균형이 맞아 편안함을 느낍니다. 겉으로 닮은 사람보다 내가 부족한 부분을 자연스럽게 채워주는 사람이 인연입니다.`)):''}
-  ${sec(`${yg}년 · 올해의 ${label} 흐름`,p(YEAR[rel].replace('{f}',f)))}
-  ${sec(`${label} 조언`,ADV[cat].map(p).join(''))}
-  ${sec('개운법 (행운 요소)',p(`보완 오행인 ${need}의 기운을 가까이 하세요. 행운의 색: <b>${LUCKY[need][0]}</b> / 길한 방향: <b>${LUCKY[need][1]}</b> / 행운의 숫자: <b>${LUCKY[need][2]}</b>`))}
+  ${sec(`${yg}년 · 올해의 ${label} 흐름`,P(YEAR[rel].replace('{f}',f)))}
+  ${isMe?sec(`${label} 조언`,ADV[cat].map(P).join(''))+sec('개운법 (행운 요소)',P(`보완 오행인 ${need}의 기운을 가까이 하세요. 행운의 색: <b>${LUCKY[need][0]}</b> / 길한 방향: <b>${LUCKY[need][1]}</b> / 행운의 숫자: <b>${LUCKY[need][2]}</b>`)):''}`;
+}
+
+function compat(A,rA,B,rB,cat,label){
+  const a=A.name,b=B.name;
+  const dA=rA.ps[2],dB=rB.ps[2],yA=rA.ps[0],yB=rB.ps[0];
+  const eA=rA.dmEl,eB=rB.dmEl;
+  let score=60,out='';
+  // 1) 일간 관계
+  const relAB=(EL.indexOf(eB)-EL.indexOf(eA)+5)%5;
+  score+=[3,7,1,1,7][relAB];
+  let t1=P(REL[relAB].replace(/\{a\}/g,a).replace(/\{b\}/g,b));
+  if(GANHE[dA.gan]===dB.gan){score+=12;t1=P(`${a}님의 일간 ${dA.gan}(${GK[dA.gan]})과 ${b}님의 일간 ${dB.gan}(${GK[dB.gan]})은 <b>천간합(天干合)</b>을 이루는 인연입니다. 서로에게 강하게 끌리고, 첫 만남부터 낯설지 않았을 가능성이 큽니다.`)+t1}
+  // 2) 일지(배우자궁)
+  const zr=zrel(dA.zhi,dB.zhi);
+  const zt={합:['+12',P(`두 사람의 일지(日支, 배우자궁)가 <b>육합(六合)</b>을 이루어 함께 있을 때 마음이 편하고 생활 리듬이 잘 맞습니다. 사주 궁합에서 가장 좋게 보는 구조 중 하나입니다.`)],
+    삼합:['+7',P(`두 사람의 일지가 <b>삼합(三合)</b>의 기운으로 이어져 있습니다. 같은 목표를 공유하면 혼자일 때보다 큰 힘을 내는 협력형 인연입니다.`)],
+    충:['-10',P(`두 사람의 일지가 <b>충(沖)</b>을 이루어 가까워질수록 부딪힘이 생기기 쉽습니다. 다만 강한 끌림과 변화의 에너지도 함께 있으니, 서로의 생활 방식 차이를 인정하는 것이 핵심입니다.`)],
+    none:['0',P('두 사람의 일지 사이에는 특별한 합이나 충이 없어 평온하고 무난한 관계입니다. 무난한 만큼 노력으로 두 사람만의 색깔을 만들어가는 관계입니다.')]}[zr];
+  score+=+zt[0];
+  // 3) 띠
+  const yr=zrel(yA.zhi,yB.zhi);
+  score+={합:4,삼합:3,충:-4,none:0}[yr];
+  const ytxt={합:'띠가 육합 관계로 가족·주변과 어울릴 때도 조화로운 편입니다.',삼합:'띠가 삼합으로 이어져 서로의 사회적 활동을 돕는 관계입니다.',충:'띠가 충 관계로 의견이 갈릴 때 크게 부딪힐 수 있으니 말을 고르는 습관이 필요합니다.',none:'띠 사이에 특별한 충돌이 없어 무난합니다.'}[yr];
+  const zodi=P(`${a}님은 ${ZODIAC[yA.zhi]}띠(${yA.zhi}), ${b}님은 ${ZODIAC[yB.zhi]}띠(${yB.zhi})로 ${ytxt}`);
+  // 4) 오행 보완
+  const fillA=EL.filter(e=>rA.cnt[e]===0&&rB.cnt[e]>=2), fillB=EL.filter(e=>rB.cnt[e]===0&&rA.cnt[e]>=2);
+  score+=Math.min(3,fillA.length+fillB.length)*4;
+  let comp='';
+  if(fillA.length) comp+=P(`${a}님에게 부족한 <b>${fillA.join('·')}</b> 기운을 ${b}님이 풍부하게 갖고 있어, ${b}님 곁에서 ${a}님의 빈자리가 자연스럽게 채워집니다.`);
+  if(fillB.length) comp+=P(`${b}님에게 부족한 <b>${fillB.join('·')}</b> 기운을 ${a}님이 풍부하게 갖고 있어, ${a}님 곁에서 ${b}님이 안정을 찾습니다.`);
+  if(!comp) comp=P('서로의 부족한 오행을 직접 채워주는 구조는 뚜렷하지 않습니다. 그래서 타고난 보완보다 의식적인 배려와 소통이 더 중요합니다.');
+  score=Math.max(45,Math.min(98,score));
+  const lab=score>=90?'천생연분':score>=80?'매우 좋은 인연':score>=70?'좋은 인연':score>=60?'노력하면 더 좋아지는 인연':'서로에 대한 이해가 필요한 인연';
+  const tier=score>=80?0:score>=65?1:2;
+  return `<div class="who" style="background:#4a3b2a">♥ ${a} × ${b} · ${label} 궁합</div>
+  <div class="score"><b>${score}</b><span>점</span><small>${lab}</small></div>
+  ${P(CATC[cat][tier])}
+  ${sec('끌림과 케미 (일간의 관계)',t1)}
+  ${sec('생활 궁합 (일지 · 배우자궁)',zt[1])}
+  ${sec('띠 궁합',zodi)}
+  ${sec('서로를 채워주는 기운',comp)}
+  ${sec('갈등이 생길 때',P(`다툼이 생기면 ${a}님은 ${CONF[eA]}, ${b}님은 ${CONF[eB]} 모습을 보이기 쉽습니다. 서로의 방식을 '틀린 것'이 아니라 '다른 것'으로 받아들이는 순간 갈등의 절반이 줄어듭니다.`))}
+  ${sec('서로를 위해 보완할 점',P(`<b>${a}님이 ${b}님에게:</b> ${TIPS[eB]}`)+P(`<b>${b}님이 ${a}님에게:</b> ${TIPS[eA]}`))}`;
+}
+
+function build(o,r){
+  const cat=o.cat, label=cat==='기타'?(o.custom||'기타 고민'):cat;
+  const p=o.p;
+  let rp=null; if(p) rp=calc(p);
+  const title=p?`${o.name}님 ♥ ${p.name}님의 ${label} 사주궁합`:`${o.name}님의 ${label} 사주풀이`;
+  const sub=p?`${o.name}: ${info(o)}<br>${p.name}: ${info(p)}`:`${info(o)} (음력 환산: ${r.lunarStr})`;
+  return `<div class="rtitle"><b>${title}</b><small>${sub}</small></div>
+  <div class="rs">
+  ${personBlock(o,r,cat,label,true)}
+  ${p?personBlock(p,rp,cat,label,false)+compat(o,r,p,rp,cat,label):''}
   </div>
-  <div class="foot">※ 본 풀이는 명리학 기본 원리에 따른 참고용 콘텐츠이며, 삶의 방향은 본인의 선택이 가장 중요합니다.<br>天命 · 사주풀이</div>`;
+  <div class="foot">※ 본 풀이는 명리학 기본 원리에 따른 참고용 콘텐츠이며, 관계의 방향은 두 사람의 선택과 노력이 가장 중요합니다.<br>天命 · 사주궁합</div>`;
 }
 
 /* ===================== UI ===================== */
-const $=s=>document.querySelector(s);
 let cur=null;
 const go=n=>{['s1','s2','s3'].forEach((id,i)=>$('#'+id).classList.toggle('hide',i!==n-1));window.scrollTo({top:0,behavior:'smooth'})};
 const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2200)};
 
+const TIMES=[['x','모름 (시주 제외)'],['0','자시 (23:30~01:29)'],['2','축시 (01:30~03:29)'],['4','인시 (03:30~05:29)'],['6','묘시 (05:30~07:29)'],['8','진시 (07:30~09:29)'],['10','사시 (09:30~11:29)'],['12','오시 (11:30~13:29)'],['14','미시 (13:30~15:29)'],['16','신시 (15:30~17:29)'],['18','유시 (17:30~19:29)'],['20','술시 (19:30~21:29)'],['22','해시 (21:30~23:29)']];
+['time','ptime'].forEach(id=>$('#'+id).innerHTML=TIMES.map(([v,t])=>`<option value="${v}">${t}</option>`).join(''));
+
 $('#cats').innerHTML=CATS.map((c,i)=>`<label class="chip"><input type="radio" name="cat" value="${c}" ${i===1?'checked':''}><span>${c==='기타'?'기타(직접입력)':c}</span></label>`).join('');
-document.querySelectorAll('input[name=cat]').forEach(e=>e.onchange=()=>$('#custom').classList.toggle('hide',document.querySelector('input[name=cat]:checked').value!=='기타'));
-document.querySelectorAll('input[name=cal]').forEach(e=>e.onchange=()=>{const l=document.querySelector('input[name=cal]:checked').value==='lunar';$('#leapWrap').classList.toggle('hide',!l);if(!l)$('#leap').checked=false});
+const catVal=()=>document.querySelector('input[name=cat]:checked').value;
+document.querySelectorAll('input[name=cat]').forEach(e=>e.onchange=()=>{
+  $('#custom').classList.toggle('hide',catVal()!=='기타');
+  $('#pHint').textContent=catVal()==='기타'?'기타 카테고리는 상대방 정보를 비워두면 본인 풀이만 진행합니다':'상대방의 정보를 입력하면 두 사람의 궁합까지 풀이합니다';
+});
+[['cal','leapWrap','leap'],['pcal','pleapWrap','pleap']].forEach(([n,w,l])=>document.querySelectorAll(`input[name=${n}]`).forEach(e=>e.onchange=()=>{
+  const on=document.querySelector(`input[name=${n}]:checked`).value==='lunar';
+  $('#'+w).classList.toggle('hide',!on); if(!on)$('#'+l).checked=false;
+}));
+
+const readP=pre=>{
+  const v=$('#'+pre+'birth').value; if(!v) return null;
+  const [y,m,d]=v.split('-').map(Number);
+  return {name:$('#'+pre+'name').value.trim(),cal:document.querySelector(`input[name=${pre}cal]:checked`).value,leap:$('#'+pre+'leap').checked,y,m,d,t:$('#'+pre+'time').value,g:document.querySelector(`input[name=${pre}g]:checked`).value};
+};
 
 $('#f').onsubmit=e=>{
   e.preventDefault();
-  const [y,m,d]=$('#birth').value.split('-').map(Number);
-  const cat=document.querySelector('input[name=cat]:checked').value;
+  const cat=catVal();
   if(cat==='기타'&&!$('#custom').value.trim()){toast('기타 내용을 입력해 주세요');return}
-  cur={name:$('#name').value.trim(),cal:document.querySelector('input[name=cal]:checked').value,leap:$('#leap').checked,y,m,d,t:$('#time').value,g:document.querySelector('input[name=g]:checked').value,cat,custom:$('#custom').value.trim()};
-  try{calc(cur)}catch(err){toast('날짜를 다시 확인해 주세요 (음력 날짜/윤달 여부)');return}
-  $('#pItem').textContent=(cat==='기타'?'기타('+cur.custom+')':cat)+' 사주 상세풀이';
-  $('#pName').textContent=cur.name;
+  const me=readP(''); if(!me){toast('본인 생년월일을 입력해 주세요');return}
+  let p=readP('p');
+  if(!p&&cat!=='기타'){toast('상대방 생년월일을 입력해 주세요');return}
+  if(p&&!p.name)p.name='상대방';
+  cur={...me,cat,custom:$('#custom').value.trim(),p};
+  try{calc(cur);if(p)calc(p)}catch(err){toast('날짜를 다시 확인해 주세요 (음력 날짜/윤달 여부)');return}
+  const lab=cat==='기타'?'기타('+cur.custom+')':cat;
+  $('#pItem').textContent=lab+(p?' 사주궁합 상세풀이':' 사주 상세풀이');
+  $('#pName').textContent=p?`${cur.name} · ${p.name}`:cur.name;
   $('#pPrice').textContent=PRICE.toLocaleString()+'원';
   go(2);
 };
@@ -331,14 +433,15 @@ $('#saveImg').onclick=async()=>{
   try{
     const cv=await html2canvas($('#resultCard'),{scale:2,backgroundColor:'#f1e6cc',useCORS:true});
     const a=document.createElement('a');
-    a.download=`사주풀이_${cur.name}.png`;a.href=cv.toDataURL('image/png');a.click();
+    a.download=`사주궁합_${cur.name}.png`;a.href=cv.toDataURL('image/png');a.click();
   }catch(e){toast('이미지 저장에 실패했습니다')}
 };
 
 $('#shareUrl').onclick=async()=>{
   const q=new URLSearchParams({n:cur.name,c:cur.cal,l:cur.leap?1:0,y:cur.y,m:cur.m,d:cur.d,t:cur.t,g:cur.g,k:cur.cat,x:cur.custom,share:1});
+  if(cur.p){const p=cur.p;Object.entries({pn:p.name,pc:p.cal,pl:p.leap?1:0,py:p.y,pm:p.m,pd:p.d,pt:p.t,pg:p.g}).forEach(([k,v])=>q.set(k,v))}
   const url=location.origin+location.pathname+'?'+q.toString();
-  if(navigator.share){try{await navigator.share({title:`${cur.name}님의 사주풀이`,text:'天命 사주풀이 결과',url});return}catch(e){}}
+  if(navigator.share){try{await navigator.share({title:'天命 사주궁합 결과',text:'天命 사주궁합 결과',url});return}catch(e){}}
   try{await navigator.clipboard.writeText(url);toast('링크가 복사되었습니다')}
   catch(e){prompt('아래 링크를 복사하세요',url)}
 };
@@ -349,7 +452,8 @@ $('#again').onclick=()=>{history.replaceState(null,'',location.pathname);go(1)};
 (function(){
   const q=new URLSearchParams(location.search);
   if(q.get('share')!=='1'||!q.get('y'))return;
-  cur={name:q.get('n')||'',cal:q.get('c')||'solar',leap:q.get('l')==='1',y:+q.get('y'),m:+q.get('m'),d:+q.get('d'),t:q.get('t')||'x',g:q.get('g')||'남',cat:q.get('k')||'연애',custom:q.get('x')||''};
+  cur={name:q.get('n')||'',cal:q.get('c')||'solar',leap:q.get('l')==='1',y:+q.get('y'),m:+q.get('m'),d:+q.get('d'),t:q.get('t')||'x',g:q.get('g')||'남',cat:q.get('k')||'연애',custom:q.get('x')||'',p:null};
+  if(q.get('py')) cur.p={name:q.get('pn')||'상대방',cal:q.get('pc')||'solar',leap:q.get('pl')==='1',y:+q.get('py'),m:+q.get('pm'),d:+q.get('pd'),t:q.get('pt')||'x',g:q.get('pg')||'여'};
   try{show()}catch(e){go(1)}
 })();
 </script>
