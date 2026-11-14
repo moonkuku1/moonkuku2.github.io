@@ -1,13 +1,23 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BackButton } from "@/components/back-button";
 import { AddButton } from "@/components/cart";
+import { SectionChips } from "@/components/section-chips";
 import { FACE } from "@/components/home/face";
 import { DISCLAIMER } from "@/components/home/rest";
 import { ResultBottom } from "@/components/result/bottom";
 import { Seal } from "@/components/result/seal";
 import { CONFIDENCE_LABEL, ELEMENT_COLOR, ELEMENT_NAME, getVerdict } from "@/lib/result";
 import { GUIDE_NAME, IMG, getCategory, getQuestion } from "@/lib/questions";
+
+const RESULT_SECTIONS = [
+  { id: "sec-verdict", label: "판정" },
+  { id: "sec-months", label: "시기" },
+  { id: "sec-why", label: "근거" },
+  { id: "sec-honest", label: "솔직히" },
+  { id: "sec-rx", label: "처방" },
+  { id: "sec-next", label: "이어서" },
+];
 
 type Props = { params: Promise<{ orderId: string }>; searchParams: Promise<{ q?: string }> };
 
@@ -35,10 +45,11 @@ export default async function ResultPage({ params, searchParams }: Props) {
 
   return (
     <>
-      <header className="sticky top-0 z-30 flex h-14 items-center border-b border-gold/20 bg-night/95 px-2 backdrop-blur">
-        <Link href="/#box" className="press flex items-center gap-1 px-2 text-sm text-text-sub">
-          <span aria-hidden="true">←</span> 내 풀이함
-        </Link>
+      <header className="sticky top-0 z-30 border-b border-gold/20 bg-night/95 backdrop-blur">
+        <div className="flex h-14 items-center">
+          <BackButton label="이전 화면" />
+        </div>
+        <SectionChips sections={RESULT_SECTIONS} />
       </header>
 
       <main className="pb-40">
@@ -56,8 +67,8 @@ export default async function ResultPage({ params, searchParams }: Props) {
         </section>
 
         {/* 판정 카드 */}
-        <section aria-labelledby="verdict" className="px-4">
-          <div className="hanji relative -mt-2 rounded-card p-6">
+        <section id="sec-verdict" aria-labelledby="verdict" className="scroll-mt-28 px-4 pt-3">
+          <div className="hanji relative rounded-card p-6">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <span
@@ -94,7 +105,7 @@ export default async function ResultPage({ params, searchParams }: Props) {
         </section>
 
         {/* 12달 */}
-        <section aria-labelledby="months" className="px-4 pt-8">
+        <section id="sec-months" aria-labelledby="months" className="scroll-mt-28 px-4 pt-8">
           <h2 id="months" className="font-serif text-[21px] font-black">
             언제가 좋을까
           </h2>
@@ -109,7 +120,7 @@ export default async function ResultPage({ params, searchParams }: Props) {
                     f === "good" ? "h-16 bg-gold" : f === "careful" ? "h-10 bg-seal" : "h-6 bg-surface-2"
                   }`}
                 />
-                <span className="text-[11px] text-text-sub">{i + 1}</span>
+                <span className="text-xs text-text-sub">{i + 1}</span>
                 <span className="sr-only">
                   {i + 1}월 {f === "good" ? "좋은 달" : f === "careful" ? "조심할 달" : "보통"}
                 </span>
@@ -119,7 +130,7 @@ export default async function ResultPage({ params, searchParams }: Props) {
         </section>
 
         {/* 근거 */}
-        <section aria-labelledby="why" className="px-4 pt-8">
+        <section id="sec-why" aria-labelledby="why" className="scroll-mt-28 px-4 pt-8">
           <h2 id="why" className="font-serif text-[21px] font-black">
             이렇게 본 근거
           </h2>
@@ -158,7 +169,7 @@ export default async function ResultPage({ params, searchParams }: Props) {
         </section>
 
         {/* 솔직히 */}
-        <section aria-labelledby="honest" className="px-4 pt-8">
+        <section id="sec-honest" aria-labelledby="honest" className="scroll-mt-28 px-4 pt-8">
           <div className="rounded-card border border-seal bg-seal/15 p-4">
             <h2 id="honest" className="text-sm font-bold text-gold">
               솔직히 말하면
@@ -168,7 +179,7 @@ export default async function ResultPage({ params, searchParams }: Props) {
         </section>
 
         {/* 처방 */}
-        <section aria-labelledby="rx" className="px-4 pt-8">
+        <section id="sec-rx" aria-labelledby="rx" className="scroll-mt-28 px-4 pt-8">
           <h2 id="rx" className="font-serif text-[21px] font-black">
             이번 달 처방
           </h2>
@@ -180,7 +191,7 @@ export default async function ResultPage({ params, searchParams }: Props) {
         </section>
 
         {/* 이어서 */}
-        <section aria-labelledby="next" className="px-4 pt-8">
+        <section id="sec-next" aria-labelledby="next" className="scroll-mt-28 px-4 pt-8">
           <h2 id="next" className="font-serif text-[21px] font-black">
             이어서 물어보기
           </h2>
@@ -213,3 +224,4 @@ export default async function ResultPage({ params, searchParams }: Props) {
     </>
   );
 }
+

@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { OPEN_KEY } from "@/components/chrome";
+import { prefersReducedMotion } from "@/components/use-scroll-spy";
 import { AddButton } from "@/components/cart";
 import { FACE } from "@/components/home/face";
 import { GUIDE_NAME, IMG, categories, priceLabel, questionsOf } from "@/lib/questions";
@@ -8,6 +10,26 @@ import { GUIDE_NAME, IMG, categories, priceLabel, questionsOf } from "@/lib/ques
 export function Categories() {
   const [open, setOpen] = useState<string | null>(null);
   const current = categories.find((c) => c.code === open);
+
+  // 다른 화면에 갔다 돌아오면 펼쳐 둔 카테고리를 그대로 보여 준다.
+  useEffect(() => {
+    const saved = sessionStorage.getItem(OPEN_KEY);
+    if (saved && categories.some((c) => c.code === saved)) setOpen(saved);
+  }, []);
+
+  function toggleCategory(code: string) {
+    const next = open === code ? null : code;
+    setOpen(next);
+    if (next) {
+      sessionStorage.setItem(OPEN_KEY, next);
+      // 펼친 목록이 화면 밖이라 모를 수 있어서, 그 자리로 이동한다.
+      setTimeout(() => {
+        document.getElementById("cat-panel")?.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
+      }, 50);
+    } else {
+      sessionStorage.removeItem(OPEN_KEY);
+    }
+  }
 
   return (
     <section id="categories" aria-labelledby="cat-title" className="scroll-mt-28 px-4 pt-8">
@@ -26,7 +48,7 @@ export function Categories() {
                 type="button"
                 aria-expanded={open === c.code}
                 aria-controls="cat-panel"
-                onClick={() => setOpen(open === c.code ? null : c.code)}
+                onClick={() => toggleCategory(c.code)}
                 className={`press relative block aspect-[3/4] w-full overflow-hidden rounded-poster border text-left ${
                   open === c.code ? "border-gold" : "border-gold/30"
                 }`}
@@ -65,10 +87,19 @@ export function Categories() {
       </ul>
 
       {current && (
-        <div id="cat-panel" className="mt-3 rounded-card border border-gold/30 bg-surface p-4">
-          <h3 className="font-serif text-lg font-bold text-gold">
-            {current.name} 질문 · {GUIDE_NAME[current.guide]}
-          </h3>
+        <div id="cat-panel" className="mt-3 scroll-mt-28 rounded-card border border-gold/30 bg-surface p-4">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="font-serif text-lg font-bold text-gold">
+              {current.name} 질문 · {GUIDE_NAME[current.guide]}
+            </h3>
+            <button
+              type="button"
+              onClick={() => toggleCategory(current.code)}
+              className="press shrink-0 rounded-pill border border-gold/40 px-4 text-sm text-gold"
+            >
+              접기
+            </button>
+          </div>
           <ul className="mt-2 divide-y divide-gold/15">
             {questionsOf(current.code).map((q) => (
               <li key={q.id} className="flex items-center gap-2 py-2">
@@ -82,7 +113,7 @@ export function Categories() {
           </ul>
           <button
             type="button"
-            onClick={() => setOpen(null)}
+            onClick={() => { toggleCategory(current.code); document.getElementById("categories")?.scrollIntoView({ block: "start" }); }}
             className="press mt-2 w-full rounded-pill border border-gold/40 text-sm text-gold"
           >
             접기
@@ -92,3 +123,4 @@ export function Categories() {
     </section>
   );
 }
+

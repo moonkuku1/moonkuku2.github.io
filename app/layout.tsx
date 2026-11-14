@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_KR, Noto_Serif_KR, Song_Myung } from "next/font/google";
+import { BackToTop } from "@/components/back-to-top";
 import { CartProvider } from "@/components/cart";
 import "./globals.css";
 
@@ -36,15 +37,17 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" className={`${songMyung.variable} ${notoSerif.variable} ${notoSans.variable}`}>
+    <html lang="ko" data-scroll-behavior="smooth" className={`${songMyung.variable} ${notoSerif.variable} ${notoSans.variable}`}>
       <body>
         <CartProvider>
           <div className="app-shell">{children}</div>
+          <BackToTop />
         </CartProvider>
       </body>
     </html>
   );
 }
+
 
 
 

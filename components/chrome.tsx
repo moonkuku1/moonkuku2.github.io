@@ -1,23 +1,39 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useCart } from "@/components/cart";
+import { SectionChips } from "@/components/section-chips";
+import { prefersReducedMotion } from "@/components/use-scroll-spy";
 import { IMG } from "@/lib/questions";
 
-export const TABS = [
-  { href: "#today", label: "오늘" },
-  { href: "#situations", label: "이럴 때" },
-  { href: "#categories", label: "고민별" },
-  { href: "#guides", label: "풀이꾼" },
-  { href: "#free", label: "무료" },
+export const HOME_SECTIONS = [
+  { id: "today", label: "오늘" },
+  { id: "situations", label: "이럴 때" },
+  { id: "categories", label: "고민별" },
+  { id: "guides", label: "풀이꾼" },
+  { id: "free", label: "무료" },
 ];
+
+export const SCROLL_KEY = "saju300-home-scroll";
+export const OPEN_KEY = "saju300-home-open";
 
 export function Header() {
   const { ids } = useCart();
+  const onHome = usePathname() === "/";
+
+  function goHome() {
+    // 로고를 누르면 처음부터 다시 본다(저장된 위치를 지운다).
+    sessionStorage.removeItem(SCROLL_KEY);
+    sessionStorage.removeItem(OPEN_KEY);
+    if (onHome) window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" });
+  }
+
   return (
     <header className="sticky top-0 z-30 border-b border-gold/20 bg-night/95 backdrop-blur">
       <div className="flex h-14 items-center justify-between px-4">
-        <Link href="/" className="press flex items-center gap-2">
+        <Link href="/" onClick={goHome} className="press flex items-center gap-2" aria-label="사주300 처음으로">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={`${IMG}/logo/haechi-face.png`} alt="" width={32} height={32} className="h-8 w-8" />
           <span className="font-serif text-lg font-black text-gold">사주300</span>
@@ -35,33 +51,29 @@ export function Header() {
           )}
         </a>
       </div>
-      <nav aria-label="홈 구역" className="no-scrollbar flex overflow-x-auto px-2">
-        {TABS.map((t, i) => (
-          <a
-            key={t.href}
-            href={t.href}
-            className={`press flex min-h-11 items-center px-4 text-sm font-medium ${
-              i === 0 ? "border-b-2 border-gold text-gold" : "text-text-sub"
-            }`}
-          >
-            {t.label}
-          </a>
-        ))}
-      </nav>
+      <SectionChips sections={HOME_SECTIONS} />
     </header>
   );
 }
 
 export function BottomBar({ current = "home" }: { current?: "home" | "today" | "box" | "me" }) {
   const { ids, total } = useCart();
-  const items = [
-    { key: "home", href: "/", label: "홈", icon: "🏠" },
-    { key: "today", href: "/#today", label: "오늘 한 마디", icon: "🌙" },
-    { key: "box", href: "/#box", label: "내 풀이함", icon: "📜" },
-    { key: "me", href: "/#me", label: "내 정보", icon: "🙂" },
-  ] as const;
+  const [notice, setNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!notice) return;
+    const t = setTimeout(() => setNotice(null), 2200);
+    return () => clearTimeout(t);
+  }, [notice]);
+
+  const base = "press flex min-h-14 flex-col items-center justify-center text-xs";
   return (
     <div className="fixed bottom-0 left-1/2 z-40 w-full max-w-[480px] -translate-x-1/2">
+      {notice && (
+        <p role="status" className="mx-auto mb-2 w-fit rounded-pill border border-gold/40 bg-surface-2 px-4 py-2 text-sm">
+          {notice}
+        </p>
+      )}
       {ids.length > 0 && (
         <div
           id="cart"
@@ -76,21 +88,26 @@ export function BottomBar({ current = "home" }: { current?: "home" | "today" | "
         </div>
       )}
       <nav aria-label="아래 메뉴" className="grid grid-cols-4 border-t border-gold/20 bg-night/95 backdrop-blur">
-        {items.map((it) => (
-          <Link
-            key={it.key}
-            href={it.href}
-            aria-current={current === it.key ? "page" : undefined}
-            className={`press flex min-h-14 flex-col items-center justify-center text-xs ${
-              current === it.key ? "text-gold" : "text-text-sub"
-            }`}
-          >
-            <span aria-hidden="true" className="text-lg leading-none">
-              {it.icon}
-            </span>
-            {it.label}
-          </Link>
-        ))}
+        <Link
+          href="/"
+          aria-current={current === "home" ? "page" : undefined}
+          className={`${base} ${current === "home" ? "text-gold" : "text-text-sub"}`}
+        >
+          <span aria-hidden="true" className="text-lg leading-none">🏠</span>
+          홈
+        </Link>
+        <Link href="/#today" className={`${base} text-text-sub`}>
+          <span aria-hidden="true" className="text-lg leading-none">🌙</span>
+          오늘 한 마디
+        </Link>
+        <button type="button" onClick={() => setNotice("내 풀이함은 준비 중이에요.")} className={`${base} text-text-sub`}>
+          <span aria-hidden="true" className="text-lg leading-none">📜</span>
+          내 풀이함
+        </button>
+        <button type="button" onClick={() => setNotice("내 정보는 준비 중이에요.")} className={`${base} text-text-sub`}>
+          <span aria-hidden="true" className="text-lg leading-none">🙂</span>
+          내 정보
+        </button>
       </nav>
     </div>
   );
