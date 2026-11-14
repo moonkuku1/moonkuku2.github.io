@@ -15,6 +15,7 @@
 | `data/questions.json` | 질문 (기존) |
 | `data/categories.json` | 카테고리 코드 → 표시 이름, 포스터·소재 그림 이름, 담당 풀이꾼, 한 줄 소개 |
 | `data/situations.json` | 홈 ‘요즘 이런 고민 있어요’ 카드 5장(제목·한 줄 설명·질문 ID 3개) |
+| `data/pricing.json` | 주제 묶음가(기본 7,900원, 궁합 12,900원), 최소 결제 금액. 묶음가가 정가 이상이면 빌드 오류 (`lib/pricing.ts`) |
 | `data/guides.json` | 풀이꾼 3명의 이름·담당 범위·역할 한 줄·말투·담당 카테고리·대표 대사 |
 | `lib/questions.ts` | 위 데이터 로더, ID 중복·필수 칸 검사, draft 표시 설정(`NEXT_PUBLIC_SHOW_DRAFT`) |
 | `lib/result.ts` | 판정 결과 모양(`Verdict`)과 샘플 결과. 판정 엔진이 붙으면 `getVerdict`만 바꾼다. |

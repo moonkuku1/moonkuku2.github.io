@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import { AddButton, useCart } from "@/components/cart";
 import { FACE } from "@/components/home/face";
 import { DISCLAIMER } from "@/components/home/rest";
-import { IMG, categories, getCategory, getQuestion, guideOf, questionsOf, sumPrice, type Question } from "@/lib/questions";
+import { bundleInfo, priceOfCategory } from "@/lib/pricing";
+import { IMG, categories, getCategory, getQuestion, guideOf, questionsOf, type Question } from "@/lib/questions";
 
 export function CartView() {
-  const { ids, total, setMany } = useCart();
+  const { ids, total, listTotal, saved, setMany } = useCart();
   const [open, setOpen] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
   const [agreeRefund, setAgreeRefund] = useState(false);
@@ -66,6 +67,8 @@ export function CartView() {
             const isOpen = open === c.code;
             const all = questionsOf(c.code);
             const rows = isOpen && showAll ? all : list;
+            const price = priceOfCategory(c.code, list);
+            const bundle = bundleInfo(c.code);
             return (
               <li key={c.code} className="overflow-hidden rounded-card border border-gold/30 bg-surface">
                 <button
@@ -84,8 +87,11 @@ export function CartView() {
                     className="h-9 w-9 shrink-0 rounded-pill bg-surface-2 object-cover object-top"
                   />
                   <span className="flex-1 font-bold">{c.name}</span>
-                  <span className="price text-sm">
-                    {list.length}개 · <b className="text-gold">{sumPrice(list).toLocaleString()}원</b>
+                  <span className="price text-right text-sm">
+                    {list.length}개 ·{" "}
+                    {price.bundled && <s className="mr-1 text-xs text-text-sub">{price.list.toLocaleString()}원</s>}
+                    <b className="text-gold">{price.pay.toLocaleString()}원</b>
+                    {price.bundled && <span className="block text-xs text-gold">묶음가 적용</span>}
                   </span>
                   <span aria-hidden="true" className="text-gold">
                     {isOpen ? "▲" : "▼"}
@@ -106,6 +112,21 @@ export function CartView() {
                         {showAll ? "선택한 것만 보기" : `전체 ${all.length}문항 보기`}
                       </button>
                     </div>
+                    {bundle && !price.bundled && (
+                      <div className="mb-1 flex flex-wrap items-center gap-2 rounded-input bg-surface-2 p-3 text-sm">
+                        <p className="price min-w-0 flex-1">
+                          {bundle.count}개를 모두 담으면 묶음가 <b className="text-gold">{bundle.bundle.toLocaleString()}원</b>
+                          <span className="text-text-sub"> (낱개 합계 {bundle.list.toLocaleString()}원)</span>
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setMany(all.map((q) => q.id), true)}
+                          className="press rounded-pill border border-gold px-3 text-sm font-medium text-gold"
+                        >
+                          모두 담기
+                        </button>
+                      </div>
+                    )}
                     <ul>
                       {rows.map((q) => {
                         const on = ids.includes(q.id);
@@ -130,11 +151,25 @@ export function CartView() {
           })}
         </ul>
 
-        <div className="mt-3 flex items-center justify-between rounded-card bg-surface-2 px-4 py-3">
-          <p className="price">
-            총 <b>{picked.length}</b>개
-          </p>
-          <p className="price text-lg font-bold text-gold">{total.toLocaleString()}원</p>
+        <div className="mt-3 rounded-card bg-surface-2 px-4 py-3">
+          {saved > 0 && (
+            <div className="price mb-1 space-y-0.5 border-b border-gold/20 pb-2 text-sm text-text-sub">
+              <p className="flex justify-between">
+                <span>낱개 합계</span>
+                <span>{listTotal.toLocaleString()}원</span>
+              </p>
+              <p className="flex justify-between text-gold">
+                <span>묶음가 할인</span>
+                <span>-{saved.toLocaleString()}원</span>
+              </p>
+            </div>
+          )}
+          <div className="flex items-center justify-between">
+            <p className="price">
+              총 <b>{picked.length}</b>개
+            </p>
+            <p className="price text-lg font-bold text-gold">{total.toLocaleString()}원</p>
+          </div>
         </div>
         <button
           type="button"
@@ -216,4 +251,5 @@ export function CartView() {
     </div>
   );
 }
+
 

@@ -60,6 +60,7 @@ export default async function CategoryPage({ params }: Props) {
         </section>
 
         <Picker
+          code={code}
           questions={list.map((q) => ({
             id: q.id,
             order: q.order,
@@ -76,3 +77,4 @@ export default async function CategoryPage({ params }: Props) {
     </div>
   );
 }
+

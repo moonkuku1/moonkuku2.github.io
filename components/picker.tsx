@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { AddButton, useCart } from "@/components/cart";
+import { bundleInfo, priceOfCategory } from "@/lib/pricing";
+import { getQuestion } from "@/lib/questions";
 
 export type PickerQuestion = {
   id: string;
@@ -15,14 +17,16 @@ export type PickerQuestion = {
 };
 
 /** 한 주제의 질문 전체를 한 화면에 보여 주고, 전체 선택·해제와 시기 필터를 제공한다. */
-export function Picker({ questions }: { questions: PickerQuestion[] }) {
+export function Picker({ code, questions }: { code: string; questions: PickerQuestion[] }) {
   const { has, setMany, ids, total } = useCart();
+  const bundle = bundleInfo(code);
   const [onlyTiming, setOnlyTiming] = useState(false);
 
   const shown = useMemo(() => (onlyTiming ? questions.filter((q) => q.includesTiming) : questions), [questions, onlyTiming]);
   const starter = questions.slice(0, 3);
   const pickedHere = questions.filter((q) => has(q.id));
-  const hereTotal = pickedHere.reduce((s, q) => s + q.price, 0);
+  const here = priceOfCategory(code, pickedHere.map((q) => getQuestion(q.id)!).filter(Boolean));
+  const allIn = pickedHere.length === questions.length;
   const shownIds = shown.map((q) => q.id);
   const allShownIn = shownIds.length > 0 && shownIds.every((id) => has(id));
   const starterIn = starter.every((q) => has(q.id));
@@ -58,6 +62,29 @@ export function Picker({ questions }: { questions: PickerQuestion[] }) {
           </ul>
         </div>
       </section>
+
+      {/* 묶음가 */}
+      {bundle && (
+        <section aria-labelledby="bundle-title" className="px-4 pt-3">
+          <div className="flex flex-wrap items-center gap-3 rounded-card border border-gold/30 bg-surface p-4">
+            <p id="bundle-title" className="min-w-0 flex-1 text-sm leading-snug">
+              <b className="font-serif text-base text-gold">{bundle.count}개 모두 담으면 묶음가</b>
+              <span className="price block">
+                낱개 합계 {bundle.list.toLocaleString()}원 → <b className="text-gold">{bundle.bundle.toLocaleString()}원</b>
+                <span className="text-text-sub"> ({bundle.save.toLocaleString()}원 덜 내요)</span>
+              </span>
+            </p>
+            <button
+              type="button"
+              aria-pressed={allIn}
+              onClick={() => setMany(questions.map((q) => q.id), !allIn)}
+              className={`${btn} ${allIn ? "border-gold bg-gold text-night" : "border-gold/60 text-gold"}`}
+            >
+              {allIn ? "묶음 담았어요 ✓ 모두 빼기" : `${bundle.count}개 묶음으로 담기`}
+            </button>
+          </div>
+        </section>
+      )}
 
       {/* 도구 줄 */}
       <section aria-label="질문 고르기 도구" className="sticky top-14 z-20 mt-5 border-y border-gold/20 bg-night/95 px-4 py-2 backdrop-blur">
@@ -116,7 +143,7 @@ export function Picker({ questions }: { questions: PickerQuestion[] }) {
               "질문 옆 ‘+’를 눌러 담아 보세요."
             ) : (
               <>
-                이 주제 {pickedHere.length}개 · {hereTotal.toLocaleString()}원
+                이 주제 {pickedHere.length}개 · {here.pay.toLocaleString()}원{here.bundled && <span className="ml-1 text-xs text-gold">묶음가</span>}
                 <span className="block text-xs text-text-sub">
                   장바구니 전체 {ids.length}개 · {total.toLocaleString()}원
                 </span>
@@ -138,3 +165,4 @@ export function Picker({ questions }: { questions: PickerQuestion[] }) {
     </>
   );
 }
+

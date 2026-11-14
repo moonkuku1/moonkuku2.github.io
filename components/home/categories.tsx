@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCart } from "@/components/cart";
 import { FACE } from "@/components/home/face";
+import { bundleInfo } from "@/lib/pricing";
 import { GUIDE_NAME, IMG, categories, getQuestion, priceLabel, questionsOf } from "@/lib/questions";
 
 /** 궁금한 주제 고르기: 포스터를 누르면 그 주제의 질문 30개가 한 화면에 나온다(/c/코드). */
@@ -20,6 +21,7 @@ export function Categories() {
         {categories.map((c) => {
           const list = questionsOf(c.code);
           const sample = list[0];
+          const bundle = bundleInfo(c.code);
           const picked = ids.filter((id) => getQuestion(id)?.categoryCode === c.code).length;
           return (
             <li key={c.code} id={`cat-${c.code}`} className="scroll-mt-28">
@@ -57,7 +59,7 @@ export function Categories() {
                 <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-night via-night/85 to-transparent p-3 pt-8">
                   <span className="block font-display text-lg leading-tight">{c.blurb}</span>
                   <span className="price mt-0.5 block text-xs text-text-sub">
-                    {sample ? priceLabel(sample) : ""} · {list.length}문항
+                    {sample ? priceLabel(sample) : ""} · {list.length}문항{bundle ? ` · 묶음 ${bundle.bundle.toLocaleString()}원` : ""}
                   </span>
                 </span>
               </Link>
@@ -68,3 +70,4 @@ export function Categories() {
     </section>
   );
 }
+

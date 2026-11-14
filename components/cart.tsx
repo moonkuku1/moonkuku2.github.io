@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { cartTotals } from "@/lib/pricing";
 import { getQuestion } from "@/lib/questions";
 
 type CartValue = {
@@ -9,7 +10,12 @@ type CartValue = {
   toggle: (id: string) => void;
   /** 여러 질문을 한꺼번에 담거나 뺀다 */
   setMany: (ids: string[], on: boolean) => void;
+  /** 실제로 내는 금액(묶음가 반영) */
   total: number;
+  /** 낱개 합계 */
+  listTotal: number;
+  /** 묶음가로 아낀 금액 */
+  saved: number;
 };
 
 const CartContext = createContext<CartValue | null>(null);
@@ -50,7 +56,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       has: (id) => ids.includes(id),
       toggle,
       setMany,
-      total: ids.reduce((sum, id) => sum + (getQuestion(id)?.price ?? 0), 0),
+      total: cartTotals(ids).pay,
+      listTotal: cartTotals(ids).list,
+      saved: cartTotals(ids).save,
     }),
     [ids, toggle, setMany],
   );
@@ -82,4 +90,5 @@ export function AddButton({ id, title }: { id: string; title: string }) {
     </button>
   );
 }
+
 
