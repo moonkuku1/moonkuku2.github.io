@@ -8,11 +8,11 @@ export function Situations() {
       <h2 id="sit-title" className="px-4 font-serif text-[21px] font-black">
         이럴 땐 이 질문
       </h2>
-      <ul className="no-scrollbar mt-3 flex snap-x gap-3 overflow-x-auto px-4">
+      <ul className="no-scrollbar mt-3 flex snap-x gap-3 overflow-x-auto px-4 lg:mx-4 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0 xl:grid-cols-5">
         {situations.map((s) => (
           <li
             key={s.id}
-            className="w-[78%] shrink-0 snap-start rounded-card border border-gold/30 bg-surface p-4"
+            className="w-[78%] shrink-0 snap-start lg:w-auto rounded-card border border-gold/30 bg-surface p-4"
           >
             <div className="flex items-center gap-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -47,3 +47,4 @@ export function Situations() {
     </section>
   );
 }
+

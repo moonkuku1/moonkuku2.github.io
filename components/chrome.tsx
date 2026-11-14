@@ -87,7 +87,7 @@ export function BottomBar({ current = "home" }: { current?: "home" | "today" | "
           </button>
         </div>
       )}
-      <nav aria-label="아래 메뉴" className="grid grid-cols-4 border-t border-gold/20 bg-night/95 backdrop-blur">
+      <nav aria-label="아래 메뉴" className="grid grid-cols-4 border-t lg:hidden border-gold/20 bg-night/95 backdrop-blur">
         <Link
           href="/"
           aria-current={current === "home" ? "page" : undefined}
@@ -112,3 +112,4 @@ export function BottomBar({ current = "home" }: { current?: "home" | "today" | "
     </div>
   );
 }
+

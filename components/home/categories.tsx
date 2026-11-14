@@ -38,7 +38,7 @@ export function Categories() {
       </h2>
       <p className="mt-1 text-sm text-text-sub">포스터를 누르면 질문 30개가 펼쳐져요.</p>
 
-      <ul className="mt-3 grid grid-cols-2 gap-3">
+      <ul className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
         {categories.map((c) => {
           const list = questionsOf(c.code);
           const sample = list[0];
@@ -100,9 +100,9 @@ export function Categories() {
               접기
             </button>
           </div>
-          <ul className="mt-2 divide-y divide-gold/15">
+          <ul className="mt-2 lg:grid lg:grid-cols-2 lg:gap-x-10">
             {questionsOf(current.code).map((q) => (
-              <li key={q.id} className="flex items-center gap-2 py-2">
+              <li key={q.id} className="flex items-center gap-2 border-b border-gold/15 py-2">
                 <p className="flex-1 text-sm leading-snug">
                   {q.title}
                   <span className="price block text-xs text-text-sub">{q.people === 2 ? `두 사람 ${q.price}원` : `${q.price}원`}</span>
@@ -123,4 +123,5 @@ export function Categories() {
     </section>
   );
 }
+
 

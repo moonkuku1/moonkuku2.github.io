@@ -44,7 +44,7 @@ export default async function ResultPage({ params, searchParams }: Props) {
   const guideFile = `guide-${v.guide}.jpg`;
 
   return (
-    <>
+    <div className="app-shell">
       <header className="sticky top-0 z-30 border-b border-gold/20 bg-night/95 backdrop-blur">
         <div className="flex h-14 items-center">
           <BackButton label="이전 화면" />
@@ -221,7 +221,8 @@ export default async function ResultPage({ params, searchParams }: Props) {
         <p className="px-4 pt-8 text-xs leading-relaxed text-text-sub">{DISCLAIMER}</p>
       </main>
       <ResultBottom orderId={orderId} />
-    </>
+    </div>
   );
 }
+
 

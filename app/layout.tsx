@@ -40,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ko" data-scroll-behavior="smooth" className={`${songMyung.variable} ${notoSerif.variable} ${notoSans.variable}`}>
       <body>
         <CartProvider>
-          <div className="app-shell">{children}</div>
+          {children}
           <BackToTop />
         </CartProvider>
       </body>

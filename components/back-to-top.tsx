@@ -19,9 +19,11 @@ export function BackToTop() {
   }, []);
 
   if (!show) return null;
-  const bottom = onHome && ids.length > 0 ? "bottom-[156px]" : "bottom-[88px]";
+  // 홈은 PC에서 아래 메뉴가 없고 넓게 펼쳐지므로 위치가 다르다.
+  const bottom = onHome ? (ids.length > 0 ? "bottom-[156px] lg:bottom-[88px]" : "bottom-[88px] lg:bottom-6") : "bottom-[88px]";
+  const width = onHome ? "max-w-[480px] lg:max-w-[1200px]" : "max-w-[480px]";
   return (
-    <div className={`pointer-events-none fixed left-1/2 z-40 w-full max-w-[480px] -translate-x-1/2 ${bottom}`}>
+    <div className={`pointer-events-none fixed left-1/2 z-40 w-full ${width} -translate-x-1/2 ${bottom}`}>
       <button
         type="button"
         aria-label="맨 위로"
@@ -33,3 +35,4 @@ export function BackToTop() {
     </div>
   );
 }
+

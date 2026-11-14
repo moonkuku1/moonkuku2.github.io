@@ -59,6 +59,13 @@ body {
   position: relative;
 }
 
+/* 홈은 PC(1024px 이상)에서 넓게 펼친다. 다른 화면은 480px 그대로. */
+@media (min-width: 1024px) {
+  .app-shell-wide {
+    max-width: 1200px;
+  }
+}
+
 .hanji {
   background-color: var(--color-hanji);
   background-image: url("/images/saju300-images/textures/tex-hanji.jpg");

@@ -45,9 +45,9 @@ const BANNERS: {
 export function Banners() {
   return (
     <section aria-label="풀이꾼 소개" className="pt-4">
-      <ul className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto px-4">
+      <ul className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 lg:grid lg:grid-cols-3 lg:gap-4 lg:overflow-visible">
         {BANNERS.map((b) => (
-          <li key={b.guide} className="relative aspect-[3/4] w-[86%] shrink-0 snap-center overflow-hidden rounded-card border border-gold/30">
+          <li key={b.guide} className="relative aspect-[3/4] w-[86%] shrink-0 snap-center lg:w-auto overflow-hidden rounded-card border border-gold/30">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={`${IMG}/banners/${b.file}`} alt={b.alt} className="absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-x-0 bottom-0 flex h-[40%] flex-col justify-end gap-1 bg-gradient-to-t from-night via-night/90 to-transparent p-4">
@@ -71,5 +71,6 @@ export function Banners() {
     </section>
   );
 }
+
 
 

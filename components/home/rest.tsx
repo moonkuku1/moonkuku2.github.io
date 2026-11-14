@@ -33,9 +33,9 @@ export function Guides() {
         사주300의 풀이꾼
       </h2>
       <p className="mt-1 text-sm text-text-sub">세 풀이꾼은 모두 해치 삼백이가 둔갑한 얼굴이에요.</p>
-      <ul className="mt-3 space-y-3">
+      <ul className="mt-3 space-y-3 lg:grid lg:grid-cols-3 lg:gap-4 lg:space-y-0">
         {GUIDES.map((g) => (
-          <li key={g.guide} className="relative aspect-[3/4] overflow-hidden rounded-card border border-gold/30 bg-surface">
+          <li key={g.guide} className="relative aspect-[3/4] overflow-hidden rounded-card border border-gold/30 bg-surface lg:aspect-[4/5]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={`${IMG}/guides/${g.file}`} alt={g.alt} className="absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-x-0 bottom-0 h-[34%] bg-gradient-to-t from-night via-night/90 to-transparent p-4 pt-8">
@@ -101,7 +101,7 @@ export function Promises() {
       <h2 id="promise-title" className="font-serif text-[21px] font-black">
         사주300의 약속 3가지
       </h2>
-      <ol className="mt-3 space-y-2">
+      <ol className="mt-3 space-y-2 lg:grid lg:grid-cols-3 lg:gap-4 lg:space-y-0">
         {items.map(([t, d], i) => (
           <li key={t} className="flex gap-3 rounded-card border border-gold/20 bg-surface p-4">
             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-pill bg-gold font-bold text-night">
@@ -125,4 +125,5 @@ export function Footer() {
     </footer>
   );
 }
+
 
