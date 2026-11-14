@@ -7,6 +7,8 @@ type CartValue = {
   ids: string[];
   has: (id: string) => boolean;
   toggle: (id: string) => void;
+  /** 여러 질문을 한꺼번에 담거나 뺀다 */
+  setMany: (ids: string[], on: boolean) => void;
   total: number;
 };
 
@@ -34,14 +36,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const setMany = useCallback((targets: string[], on: boolean) => {
+    setIds((prev) => {
+      const next = on ? [...prev, ...targets.filter((id) => !prev.includes(id))] : prev.filter((id) => !targets.includes(id));
+      localStorage.setItem(KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
   const value = useMemo<CartValue>(
     () => ({
       ids,
       has: (id) => ids.includes(id),
       toggle,
+      setMany,
       total: ids.reduce((sum, id) => sum + (getQuestion(id)?.price ?? 0), 0),
     }),
-    [ids, toggle],
+    [ids, toggle, setMany],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
@@ -71,3 +82,4 @@ export function AddButton({ id, title }: { id: string; title: string }) {
     </button>
   );
 }
+

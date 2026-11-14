@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Noto_Sans_KR, Noto_Serif_KR, Song_Myung } from "next/font/google";
 import { BackToTop } from "@/components/back-to-top";
 import { CartProvider } from "@/components/cart";
+import { MotionGate } from "@/components/motion-gate";
 import "./globals.css";
 
 const songMyung = Song_Myung({
@@ -42,11 +43,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <CartProvider>
           {children}
           <BackToTop />
+          <MotionGate />
         </CartProvider>
       </body>
     </html>
   );
 }
+
 
 
 

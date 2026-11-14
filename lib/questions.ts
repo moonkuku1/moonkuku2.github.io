@@ -1,6 +1,7 @@
 import questionsJson from "@/data/questions.json";
 import categoriesJson from "@/data/categories.json";
 import situationsJson from "@/data/situations.json";
+import guidesJson from "@/data/guides.json";
 
 export type Question = {
   id: string;
@@ -11,6 +12,8 @@ export type Question = {
   description: string;
   people: number;
   price: number;
+  includesTiming: boolean;
+  answerFormat: string;
   status: string;
 };
 
@@ -24,9 +27,21 @@ export type Category = {
   blurb: string;
 };
 
+export type GuideInfo = {
+  id: Guide;
+  name: string;
+  scope: string;
+  role: string;
+  voice: string;
+  categories: string[];
+  line: string;
+  face: string;
+};
+
 export type Situation = {
   id: string;
   title: string;
+  blurb: string;
   art: string;
   questionIds: string[];
 };
@@ -49,6 +64,11 @@ for (const q of all) {
 export const questions: Question[] = all.filter((q) => SHOW_DRAFT || q.status === "published");
 export const categories = categoriesJson as Category[];
 export const situations = situationsJson as Situation[];
+export const guides = guidesJson as GuideInfo[];
+
+export function getGuide(id: Guide) {
+  return guides.find((g) => g.id === id)!;
+}
 
 export function getQuestion(id: string) {
   return questions.find((q) => q.id === id);
@@ -66,14 +86,16 @@ export function questionsOf(code: string) {
   return questions.filter((q) => q.categoryCode === code).sort((a, b) => a.order - b.order);
 }
 
-export const GUIDE_NAME: Record<Guide, string> = {
-  assi: "삼백 아씨",
-  doryeong: "삼백 도령",
-  haechi: "해치 삼백이",
-};
+export const GUIDE_NAME = Object.fromEntries(guides.map((g) => [g.id, g.name])) as Record<Guide, string>;
+
+/** 질문 목록의 합계 */
+export function sumPrice(list: Question[]) {
+  return list.reduce((s, q) => s + q.price, 0);
+}
 
 export const IMG = "/images/saju300-images";
 
 export function priceLabel(q: Question) {
   return q.people === 2 ? `두 사람 ${q.price}원` : `하나에 ${q.price}원`;
 }
+

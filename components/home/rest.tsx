@@ -1,30 +1,13 @@
-import { GUIDE_NAME, IMG, type Guide } from "@/lib/questions";
+import Link from "next/link";
+import { IMG, getCategory, guides, questionsOf, type Guide } from "@/lib/questions";
 
 export const DISCLAIMER = "풀이는 참고용 해석이며 의료·법률·투자 판단을 대신하지 않습니다.";
 
-const GUIDES: { guide: Guide; file: string; role: string; line: string; alt: string }[] = [
-  {
-    guide: "assi",
-    file: "guide-assi.jpg",
-    role: "연애 · 결혼 · 궁합",
-    line: "좋아하는지 아닌지, 첫 줄에 말해 줄게요.",
-    alt: "연꽃 핀 달밤 호숫가에서 사주 명식표를 보며 활짝 웃는 삼백 아씨",
-  },
-  {
-    guide: "doryeong",
-    file: "guide-doryeong.jpg",
-    role: "일 · 재물 · 시험 · 가족",
-    line: "버틸지 그만둘지, 도장 찍어 드립니다.",
-    alt: "갓을 쓰고 붓으로 월별 흐름 병풍을 가리키며 웃는 삼백 도령",
-  },
-  {
-    guide: "haechi",
-    file: "guide-haechi.jpg",
-    role: "판정 도장 · 오늘 한 마디 · 올해 · 나",
-    line: "오늘의 한 줄은 그냥 주마.",
-    alt: "두루마리 위에 붉은 도장을 찍으려는 해치 삼백이",
-  },
-];
+const SCENES: Record<Guide, { file: string; alt: string }> = {
+  assi: { file: "guide-assi.jpg", alt: "연꽃 핀 달밤 호숫가에서 사주 명식표를 보며 활짝 웃는 삼백 아씨" },
+  doryeong: { file: "guide-doryeong.jpg", alt: "갓을 쓰고 붓으로 월별 흐름 병풍을 가리키며 웃는 삼백 도령" },
+  haechi: { file: "guide-haechi.jpg", alt: "두루마리 위에 붉은 도장을 찍으려는 해치 삼백이" },
+};
 
 export function Guides() {
   return (
@@ -32,25 +15,54 @@ export function Guides() {
       <h2 id="guides-title" className="font-serif text-[21px] font-black">
         사주300의 풀이꾼
       </h2>
-      <p className="mt-1 text-sm text-text-sub">세 풀이꾼은 모두 해치 삼백이가 둔갑한 얼굴이에요.</p>
+      <p className="mt-1 text-sm text-text-sub">세 풀이꾼은 모두 해치 삼백이가 둔갑한 얼굴이에요. 질문마다 맡은 풀이꾼이 답해요.</p>
       <ul className="mt-3 space-y-3 lg:grid lg:grid-cols-3 lg:gap-4 lg:space-y-0">
-        {GUIDES.map((g) => (
-          <li key={g.guide} className="relative aspect-[3/4] overflow-hidden rounded-card border border-gold/30 bg-surface lg:aspect-[4/5]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`${IMG}/guides/${g.file}`} alt={g.alt} className="absolute inset-0 h-full w-full object-cover" />
-            <div className="absolute inset-x-0 bottom-0 h-[34%] bg-gradient-to-t from-night via-night/90 to-transparent p-4 pt-8">
-              <h3 className="font-serif text-lg font-bold">
-                {GUIDE_NAME[g.guide]} <span className="ml-1 text-xs font-medium text-gold">{g.role}</span>
-              </h3>
-              <p className="mt-1 font-display text-lg leading-snug">{g.line}</p>
-            </div>
-          </li>
-        ))}
+        {guides.map((g) => {
+          const scene = SCENES[g.id];
+          const count = g.categories.reduce((n, code) => n + questionsOf(code).length, 0);
+          return (
+            <li
+              key={g.id}
+              className="relative aspect-[3/4] overflow-hidden rounded-card border border-gold/30 bg-surface lg:aspect-[4/5]"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`${IMG}/guides/${scene.file}`}
+                alt={scene.alt}
+                className="kenburns motion absolute inset-0 h-full w-full object-cover object-top"
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-night via-night/95 to-transparent p-4 pt-14">
+                <h3 className="font-serif text-lg font-bold">
+                  {g.name} <span className="ml-1 text-xs font-medium text-gold">{g.scope}</span>
+                </h3>
+                <p className="mt-1 text-sm">{g.role}</p>
+                <p className="mt-1 font-display text-lg leading-snug">{g.line}</p>
+                <p className="mt-1 text-xs text-text-sub">
+                  {g.categories.length > 0 && `담당 질문 ${count}개`}
+                  {g.id === "haechi" && " + 오늘 한 마디"}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {g.categories.map((code) => {
+                    const c = getCategory(code);
+                    return c ? (
+                      <Link
+                        key={code}
+                        href={`/c/${code}`}
+                        className="press flex items-center rounded-pill border border-gold/50 px-3 text-sm text-gold"
+                      >
+                        {c.name}
+                      </Link>
+                    ) : null;
+                  })}
+                </div>
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
 }
-
 export function SampleAnswer() {
   return (
     <section aria-labelledby="sample-title" className="px-4 pt-8">
@@ -80,7 +92,7 @@ export function FreeCard() {
       </h2>
       <div className="mt-3 flex items-center gap-3 rounded-card border border-gold/30 bg-surface-2 p-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={`${IMG}/logo/haechi-face.png`} alt="" className="h-12 w-12" />
+        <img src={`${IMG}/logo/haechi-face.png`} alt="" className="float motion h-12 w-12" />
         <p className="flex-1 text-sm">생일만 알려 주면 내 일주 카드를 무료로 보여 드려요.</p>
         <a href="#today" className="press flex items-center rounded-pill border border-gold px-4 text-sm font-bold text-gold">
           시작
@@ -125,5 +137,6 @@ export function Footer() {
     </footer>
   );
 }
+
 
 

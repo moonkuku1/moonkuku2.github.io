@@ -10,14 +10,13 @@ import { IMG } from "@/lib/questions";
 
 export const HOME_SECTIONS = [
   { id: "today", label: "오늘" },
-  { id: "situations", label: "이럴 때" },
-  { id: "categories", label: "고민별" },
+  { id: "situations", label: "요즘 고민" },
+  { id: "categories", label: "주제별" },
   { id: "guides", label: "풀이꾼" },
   { id: "free", label: "무료" },
 ];
 
 export const SCROLL_KEY = "saju300-home-scroll";
-export const OPEN_KEY = "saju300-home-open";
 
 export function Header() {
   const { ids } = useCart();
@@ -26,7 +25,6 @@ export function Header() {
   function goHome() {
     // 로고를 누르면 처음부터 다시 본다(저장된 위치를 지운다).
     sessionStorage.removeItem(SCROLL_KEY);
-    sessionStorage.removeItem(OPEN_KEY);
     if (onHome) window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? "auto" : "smooth" });
   }
 
@@ -38,8 +36,8 @@ export function Header() {
           <img src={`${IMG}/logo/haechi-face.png`} alt="" width={32} height={32} className="h-8 w-8" />
           <span className="font-serif text-lg font-black text-gold">사주300</span>
         </Link>
-        <a
-          href="#cart"
+        <Link
+          href="/cart"
           aria-label={`장바구니, 담은 질문 ${ids.length}개`}
           className="press relative flex h-11 w-11 items-center justify-center text-xl"
         >
@@ -49,7 +47,7 @@ export function Header() {
               {ids.length}
             </span>
           )}
-        </a>
+        </Link>
       </div>
       <SectionChips sections={HOME_SECTIONS} />
     </header>
@@ -82,9 +80,9 @@ export function BottomBar({ current = "home" }: { current?: "home" | "today" | "
           <p className="text-sm">
             담은 질문 {ids.length}개 · <span className="price font-bold text-gold">{total.toLocaleString()}원</span>
           </p>
-          <button type="button" className="press rounded-pill bg-cta px-4 text-sm font-bold text-night">
-            결제하고 바로 보기
-          </button>
+          <Link href="/cart" className="press flex items-center rounded-pill bg-cta px-4 text-sm font-bold text-night">
+            장바구니 보기
+          </Link>
         </div>
       )}
       <nav aria-label="아래 메뉴" className="grid grid-cols-4 border-t lg:hidden border-gold/20 bg-night/95 backdrop-blur">
@@ -112,4 +110,5 @@ export function BottomBar({ current = "home" }: { current?: "home" | "today" | "
     </div>
   );
 }
+
 

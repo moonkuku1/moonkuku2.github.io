@@ -35,7 +35,7 @@ export function Today() {
   return (
     <section id="today" aria-labelledby="today-title" className="scroll-mt-28 px-4 pt-8">
       <h2 id="today-title" className="font-serif text-[21px] font-black">
-        해치의 오늘 한 마디 <span className="ml-1 text-sm font-medium text-gold">무료</span>
+        삼백이의 오늘 한 마디 <span className="ml-1 text-sm font-medium text-gold">무료</span>
       </h2>
       <form onSubmit={submit} className="mt-3 rounded-card border border-gold/30 bg-surface p-4">
         <fieldset>
@@ -81,3 +81,4 @@ export function Today() {
     </section>
   );
 }
+

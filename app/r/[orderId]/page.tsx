@@ -56,7 +56,7 @@ export default async function ResultPage({ params, searchParams }: Props) {
         {/* 풀이꾼 장면 */}
         <section aria-label="풀이꾼 장면" className="relative h-[300px] overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`${IMG}/guides/${guideFile}`} alt="" className="absolute inset-0 h-full w-full object-cover object-top" />
+          <img src={`${IMG}/guides/${guideFile}`} alt="" className="kenburns motion absolute inset-0 h-full w-full object-cover object-top" />
           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-night via-night/90 to-transparent p-4 pt-14">
             <p className="text-xs font-bold text-gold">
               {GUIDE_NAME[v.guide]}의 풀이 · {category?.name}
@@ -185,7 +185,7 @@ export default async function ResultPage({ params, searchParams }: Props) {
           </h2>
           <div className="mt-3 flex items-center gap-3 rounded-card border border-gold/30 bg-surface p-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`${IMG}/characters/haechi-${mood}.png`} alt="" className="h-20 w-20 shrink-0 object-contain" />
+            <img src={`${IMG}/characters/haechi-${mood}.png`} alt="" className="float motion h-20 w-20 shrink-0 object-contain" />
             <p className="font-display text-xl leading-snug">{v.prescription}</p>
           </div>
         </section>
@@ -218,11 +218,18 @@ export default async function ResultPage({ params, searchParams }: Props) {
           </ul>
         </section>
 
-        <p className="px-4 pt-8 text-xs leading-relaxed text-text-sub">{DISCLAIMER}</p>
+        {orderId === "sample" && (
+          <p className="mx-4 mt-8 rounded-input border border-gold/30 bg-surface p-3 text-sm text-text-sub">
+            샘플 결과예요. 풀이꾼 말투를 보여 드리려고 만든 예시 문장이에요. ({question.id} 담당: {GUIDE_NAME[v.guide]})
+          </p>
+        )}
+        <p className="px-4 pt-4 text-xs leading-relaxed text-text-sub">{DISCLAIMER}</p>
       </main>
       <ResultBottom orderId={orderId} />
     </div>
   );
 }
+
+
 
 

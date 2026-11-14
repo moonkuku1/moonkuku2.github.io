@@ -7,14 +7,15 @@
 - `app/globals.css`의 `@theme`에 색·글꼴·모서리 값을 한 번만 정의한다. (Tailwind v4는 `tailwind.config`의 `theme.extend` 대신 CSS `@theme`을 쓴다.)
 - 화면 코드는 `bg-night`, `text-gold`, `bg-cta`, `rounded-card` 같은 토큰 이름만 쓴다. 오행 색은 결과 화면 명식표에서만 쓴다.
 - 글꼴은 `next/font/google`로 불러온다: Song Myung(`font-display`), Noto Serif KR(`font-serif`), Noto Sans KR(`font-sans`).
-- 공통 CSS 클래스: `.app-shell`(최대 480px 가운데), `.hanji`(한지 카드 + 안쪽 금선), `.press`(44px 이상, 누르면 0.98배), `.stamp-anim`(도장 찍히기, 유일한 움직임, `prefers-reduced-motion`에서 꺼짐).
+- 공통 CSS 클래스: `.app-shell`(최대 480px 가운데), `.hanji`(한지 카드 + 안쪽 금선), `.press`(44px 이상, 누르면 0.98배), `.stamp-anim`(도장 찍히기), `.kenburns`·`.moon-glow`·`.float`·`.lift`(잔잔한 움직임, `.motion`은 화면 밖에서 멈춤, 모두 `prefers-reduced-motion`에서 꺼짐).
 
 ## 데이터
 | 파일 | 내용 |
 |---|---|
 | `data/questions.json` | 질문 (기존) |
 | `data/categories.json` | 카테고리 코드 → 표시 이름, 포스터·소재 그림 이름, 담당 풀이꾼, 한 줄 소개 |
-| `data/situations.json` | 홈 ‘이럴 땐 이 질문’ 카드 5장과 질문 ID 3개씩 |
+| `data/situations.json` | 홈 ‘요즘 이런 고민 있어요’ 카드 5장(제목·한 줄 설명·질문 ID 3개) |
+| `data/guides.json` | 풀이꾼 3명의 이름·담당 범위·역할 한 줄·말투·담당 카테고리·대표 대사 |
 | `lib/questions.ts` | 위 데이터 로더, ID 중복·필수 칸 검사, draft 표시 설정(`NEXT_PUBLIC_SHOW_DRAFT`) |
 | `lib/result.ts` | 판정 결과 모양(`Verdict`)과 샘플 결과. 판정 엔진이 붙으면 `getVerdict`만 바꾼다. |
 
@@ -24,6 +25,8 @@
 | 화면 | 경로 | 파일 |
 |---|---|---|
 | 모바일 홈 | `/` | `app/page.tsx`, `components/chrome.tsx`(헤더·탭·아래 메뉴·담은 질문 줄), `components/home/*` |
+| 주제 페이지 | `/c/[code]` | `app/c/[code]/page.tsx`, `components/picker.tsx`(전체 선택/해제·필터·고정 요약) |
+| 장바구니 | `/cart` | `app/cart/page.tsx`, `components/cart-view.tsx`(주제별 요약·펼침·결제 전 확인) |
 | 결과 | `/r/[orderId]` | `app/r/[orderId]/page.tsx`, `components/result/*` |
 | 공유 카드 | `/api/share/story`, `/api/share/og` | `app/api/share/[kind]/route.tsx`, `lib/share-fonts.ts` |
 
@@ -33,5 +36,7 @@
 - 결과 페이지의 링크 미리보기(OG) 이미지는 `generateMetadata`가 `/api/share/og`로 연결한다.
 
 ## 이후 작업과의 연결
-- 카테고리 질문 목록(`/c/[code]`), 장바구니 페이지(`/cart`)는 지금 홈의 포스터 펼침과 아래 결제 줄이 대신한다. 해당 단계에서 만든다.
+- 결과 화면의 샘플 문장은 `lib/result.ts`의 `SAMPLES`(풀이꾼별 말투 3종)다. 판정 엔진·P2가 붙으면 같은 `voice` 값을 프롬프트에 넣는다.
+- 결제는 아직 연결 전이다. `/cart`의 결제 버튼은 안내만 보여 준다.
 - 홈의 ‘오늘 한 마디’는 샘플 문장 모드다. 판정 엔진이 붙으면 같은 입력칸에 연결한다.
+

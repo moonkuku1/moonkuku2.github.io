@@ -1,0 +1,32 @@
+[
+  {
+    "id": "assi",
+    "name": "삼백 아씨",
+    "scope": "연애 · 결혼 · 궁합",
+    "role": "사람 사이의 마음과 인연을 짚어 줍니다",
+    "voice": "다정한 해요체",
+    "categories": ["L", "M", "C"],
+    "line": "좋아하는지 아닌지, 첫 줄에 말해 줄게요.",
+    "face": "assi-welcome.png"
+  },
+  {
+    "id": "doryeong",
+    "name": "삼백 도령",
+    "scope": "일 · 재물 · 시험 · 가족",
+    "role": "결정해야 할 일과 현실 문제를 정리해 줍니다",
+    "voice": "점잖은 ~습니다 · ~지요체",
+    "categories": ["J", "W", "F"],
+    "line": "버틸지 그만둘지, 도장 찍어 드립니다.",
+    "face": "doryeong-welcome.png"
+  },
+  {
+    "id": "haechi",
+    "name": "해치 삼백이",
+    "scope": "오늘 한 마디 · 올해 · 나 · 판정 도장",
+    "role": "큰 흐름을 보고 마지막에 도장을 찍어 줍니다",
+    "voice": "옛말투 반말",
+    "categories": ["Y", "P"],
+    "line": "오늘의 한 줄은 그냥 주마. 생일만 알려 다오.",
+    "face": "haechi-joy.png"
+  }
+]

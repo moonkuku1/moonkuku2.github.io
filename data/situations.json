@@ -1,7 +1,7 @@
 [
-  { "id": "confess", "title": "좋아하는 사람이 생겼을 때", "art": "love", "questionIds": ["L10", "L11", "L12"] },
-  { "id": "job", "title": "회사를 계속 다닐지 고민될 때", "art": "work", "questionIds": ["J03", "J04", "J05"] },
-  { "id": "marriage", "title": "결혼을 생각하기 시작했을 때", "art": "marry", "questionIds": ["M01", "M02", "M07"] },
-  { "id": "wealth", "title": "재물이 안 모여 답답할 때", "art": "money", "questionIds": ["W03", "W04", "W05"] },
-  { "id": "newyear", "title": "새해를 앞두고 있을 때", "art": "year", "questionIds": ["Y01", "Y02", "Y03"] }
+  { "id": "confess", "title": "좋아하는 사람이 생겼어요", "blurb": "고백할지, 기다릴지 고민될 때", "art": "love", "questionIds": ["L10", "L11", "L12"] },
+  { "id": "job", "title": "회사를 계속 다닐지 고민돼요", "blurb": "버틸지, 옮길지 정하고 싶을 때", "art": "work", "questionIds": ["J03", "J04", "J05"] },
+  { "id": "marriage", "title": "결혼을 생각하기 시작했어요", "blurb": "언제, 어떤 사람과 할지 궁금할 때", "art": "marry", "questionIds": ["M01", "M02", "M07"] },
+  { "id": "wealth", "title": "재물이 안 모여 답답해요", "blurb": "언제 들어오고 왜 새는지 알고 싶을 때", "art": "money", "questionIds": ["W03", "W04", "W05"] },
+  { "id": "newyear", "title": "새해를 앞두고 있어요", "blurb": "올해 흐름을 미리 보고 싶을 때", "art": "year", "questionIds": ["Y01", "Y02", "Y03"] }
 ]

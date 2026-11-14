@@ -95,7 +95,7 @@ body {
   display: none;
 }
 
-/* 판정 도장 찍히기: 유일한 움직임 */
+/* 판정 도장 찍히기 */
 @keyframes stamp-in {
   0% {
     opacity: 0;
@@ -113,7 +113,73 @@ body {
 .stamp-anim {
   animation: stamp-in 0.5s ease-out both;
 }
+/* 잔잔한 움직임: 느린 확대·이동, 달빛, 해치 오르내림, 포스터 떠오름. transform·opacity만 쓴다. */
+@keyframes drift {
+  from {
+    transform: scale(1.02) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.09) translate3d(-1.5%, -1%, 0);
+  }
+}
+.kenburns {
+  animation: drift 26s ease-in-out infinite alternate;
+  transform-origin: 60% 30%;
+}
+@keyframes glow {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+}
+.moon-glow {
+  position: absolute;
+  width: 26%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 228, 160, 0.6) 0%, rgba(255, 228, 160, 0) 65%);
+  pointer-events: none;
+  animation: glow 6s ease-in-out infinite;
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.float {
+  animation: bob 4.5s ease-in-out infinite;
+}
+.lift {
+  transition: transform 0.25s;
+}
+@media (hover: hover) {
+  .lift:hover {
+    transform: translateY(-4px);
+  }
+}
+/* 화면 밖에 있을 때는 멈춘다(MotionGate가 표시) */
+.motion[data-offscreen="true"] {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .kenburns,
+  .moon-glow,
+  .float {
+    animation: none;
+  }
+  .lift:hover {
+    transform: none;
+  }
   html {
     scroll-behavior: auto;
   }
@@ -129,4 +195,5 @@ body {
   outline: 2px solid var(--color-gold);
   outline-offset: 2px;
 }
+
 

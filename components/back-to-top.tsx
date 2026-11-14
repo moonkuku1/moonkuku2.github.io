@@ -9,7 +9,9 @@ import { prefersReducedMotion } from "@/components/use-scroll-spy";
 export function BackToTop() {
   const [show, setShow] = useState(false);
   const { ids } = useCart();
-  const onHome = usePathname() === "/";
+  const path = usePathname();
+  const onHome = path === "/";
+  const wide = onHome || path.startsWith("/c/");
 
   useEffect(() => {
     const onScroll = () => setShow(window.scrollY > 600);
@@ -21,7 +23,7 @@ export function BackToTop() {
   if (!show) return null;
   // 홈은 PC에서 아래 메뉴가 없고 넓게 펼쳐지므로 위치가 다르다.
   const bottom = onHome ? (ids.length > 0 ? "bottom-[156px] lg:bottom-[88px]" : "bottom-[88px] lg:bottom-6") : "bottom-[88px]";
-  const width = onHome ? "max-w-[480px] lg:max-w-[1200px]" : "max-w-[480px]";
+  const width = wide ? "max-w-[480px] lg:max-w-[1200px]" : "max-w-[480px]";
   return (
     <div className={`pointer-events-none fixed left-1/2 z-40 w-full ${width} -translate-x-1/2 ${bottom}`}>
       <button
@@ -35,4 +37,5 @@ export function BackToTop() {
     </div>
   );
 }
+
 
