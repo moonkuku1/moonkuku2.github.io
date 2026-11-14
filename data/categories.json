@@ -1,0 +1,10 @@
+[
+  { "code": "L", "name": "연애", "poster": "love", "guide": "assi", "blurb": "다음 인연, 언제 올까" },
+  { "code": "M", "name": "결혼", "poster": "marry", "guide": "assi", "blurb": "어떤 사람과 언제" },
+  { "code": "C", "name": "궁합", "poster": "gung", "guide": "assi", "blurb": "우리 둘, 잘 맞을까" },
+  { "code": "W", "name": "재물", "poster": "money", "guide": "doryeong", "blurb": "재물은 언제 들어올까" },
+  { "code": "J", "name": "일·시험", "poster": "work", "guide": "doryeong", "blurb": "버틸까, 옮길까" },
+  { "code": "Y", "name": "올해", "poster": "year", "guide": "haechi", "blurb": "좋은 달, 조심할 달" },
+  { "code": "P", "name": "나", "poster": "me", "guide": "haechi", "blurb": "타고난 나의 결" },
+  { "code": "F", "name": "가족·관계", "poster": "family", "guide": "doryeong", "blurb": "가까울수록 어려운 사이" }
+]

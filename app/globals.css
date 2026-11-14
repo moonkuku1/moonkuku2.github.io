@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+/* 디자인 토큰: docs/design-guide.md 의 '색과 글꼴' 표. 색 값은 여기서만 정의한다. */
+@theme {
+  --color-night: #04101e;
+  --color-surface: #0a1a2b;
+  --color-surface-2: #16324a;
+  --color-hanji: #efe4cc;
+  --color-ink: #1a140f;
+  --color-text: #efe4cc;
+  --color-text-sub: #a3a9ac;
+  --color-gold: #d9b46a;
+  --color-cta: #e8732a;
+  --color-seal: #a8321f;
+  --color-good: #1e5a50;
+  --color-good-bg: rgba(47, 110, 100, 0.16);
+
+  --color-oh-wood: #2f6e64;
+  --color-oh-fire: #a8321f;
+  --color-oh-earth: #b08a4a;
+  --color-oh-metal: #c9c4b8;
+  --color-oh-water: #16324a;
+
+  --font-display: var(--font-song-myung), serif;
+  --font-serif: var(--font-noto-serif), serif;
+  --font-sans: var(--font-noto-sans), sans-serif;
+
+  --radius-card: 14px;
+  --radius-poster: 12px;
+  --radius-input: 8px;
+  --radius-pill: 999px;
+}
+
+html {
+  background-color: var(--color-night);
+  background-image: url("/images/saju300-images/textures/tex-night.jpg");
+  background-size: 540px;
+  color: var(--color-text);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-shell {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  background-color: rgba(4, 16, 30, 0.55);
+  position: relative;
+}
+
+.hanji {
+  background-color: var(--color-hanji);
+  background-image: url("/images/saju300-images/textures/tex-hanji.jpg");
+  background-size: 540px;
+  color: var(--color-ink);
+  outline: 1px solid rgba(217, 180, 106, 0.55);
+  outline-offset: -8px;
+}
+
+.price {
+  font-variant-numeric: tabular-nums;
+}
+
+.press {
+  min-width: 44px;
+  min-height: 44px;
+  transition: transform 0.1s;
+}
+.press:active {
+  transform: scale(0.98);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* 판정 도장 찍히기: 유일한 움직임 */
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: rotate(-8deg) scale(1.8);
+  }
+  70% {
+    opacity: 1;
+    transform: rotate(-8deg) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-8deg) scale(1);
+  }
+}
+.stamp-anim {
+  animation: stamp-in 0.5s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .stamp-anim {
+    animation: none;
+  }
+  .press {
+    transition: none;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
