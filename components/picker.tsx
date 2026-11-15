@@ -56,7 +56,7 @@ export function Picker({ code, questions }: { code: string; questions: PickerQue
             {starter.map((q) => (
               <li key={q.id} className="flex items-center gap-2 border-b border-gold/15 py-2">
                 <p className="flex-1 text-sm leading-snug">{q.title}</p>
-                <AddButton id={q.id} title={q.title} />
+                <AddButton id={q.id} title={q.title} source="picker" />
               </li>
             ))}
           </ul>
@@ -128,7 +128,7 @@ export function Picker({ code, questions }: { code: string; questions: PickerQue
                   {q.includesTiming && " · 시기를 알려 줘요"}
                 </span>
               </p>
-              <AddButton id={q.id} title={q.title} />
+              <AddButton id={q.id} title={q.title} source="picker" />
             </li>
           ))}
         </ul>
@@ -165,4 +165,5 @@ export function Picker({ code, questions }: { code: string; questions: PickerQue
     </>
   );
 }
+
 

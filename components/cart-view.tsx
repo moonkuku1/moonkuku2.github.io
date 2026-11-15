@@ -6,6 +6,7 @@ import { AddButton, useCart } from "@/components/cart";
 import { FACE } from "@/components/home/face";
 import { DISCLAIMER } from "@/components/home/rest";
 import { bundleInfo, priceOfCategory } from "@/lib/pricing";
+import { track } from "@/lib/track";
 import { IMG, categories, getCategory, getQuestion, guideOf, questionsOf, type Question } from "@/lib/questions";
 
 export function CartView() {
@@ -19,6 +20,13 @@ export function CartView() {
 
   // 저장된 장바구니를 읽은 뒤에 보여 준다(빈 화면이 잠깐 번쩍이는 것을 막는다).
   useEffect(() => setReady(true), []);
+  // 장바구니 화면을 열었다는 사실만 알린다(담긴 질문이 있을 때 한 번)
+  useEffect(() => {
+    if (ready && ids.length > 0 && !sessionStorage.getItem("saju300-cartview")) {
+      sessionStorage.setItem("saju300-cartview", "1");
+      track("cart_view", { n: ids.length });
+    }
+  }, [ready, ids.length]);
   useEffect(() => {
     if (!notice) return;
     const t = setTimeout(() => setNotice(null), 4000);
@@ -139,7 +147,7 @@ export function CartView() {
                                 {q.people === 2 ? `두 사람 ${q.price}원` : `${q.price}원`}
                               </span>
                             </p>
-                            <AddButton id={q.id} title={q.title} />
+                            <AddButton id={q.id} title={q.title} source="cart" />
                           </li>
                         );
                       })}
@@ -199,7 +207,7 @@ export function CartView() {
                   {q.title}
                   <span className="price block text-xs text-text-sub">{q.price}원</span>
                 </p>
-                <AddButton id={q.id} title={q.title} />
+                <AddButton id={q.id} title={q.title} source="cart" />
               </li>
             ))}
           </ul>
@@ -251,5 +259,7 @@ export function CartView() {
     </div>
   );
 }
+
+
 
 

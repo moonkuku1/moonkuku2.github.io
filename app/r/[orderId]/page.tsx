@@ -211,7 +211,7 @@ export default async function ResultPage({ params, searchParams }: Props) {
                     {nq.title}
                     <span className="price block text-xs text-text-sub">{nq.price}원</span>
                   </p>
-                  <AddButton id={nq.id} title={nq.title} />
+                  <AddButton id={nq.id} title={nq.title} source="result" />
                 </li>
               );
             })}
@@ -229,6 +229,7 @@ export default async function ResultPage({ params, searchParams }: Props) {
     </div>
   );
 }
+
 
 
 

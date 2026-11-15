@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { filledBusinessInfo } from "@/lib/business-info";
+import { LEGAL_DOCS } from "@/lib/legal";
 import { IMG, getCategory, guides, questionsOf } from "@/lib/questions";
 
 export const DISCLAIMER = "풀이는 참고용 해석이며 의료·법률·투자 판단을 대신하지 않습니다.";
@@ -98,14 +100,21 @@ export function Promises() {
 }
 
 export function Footer() {
+  const info = filledBusinessInfo();
   return (
-    <footer className="px-4 pb-40 pt-10 text-xs leading-relaxed text-text-sub">
-      <p>{DISCLAIMER}</p>
+    <footer className="px-4 pb-40 pt-10 text-xs leading-relaxed text-text-sub lg:pb-16">
+      <nav aria-label="안내 문서" className="flex flex-wrap gap-x-4">
+        {LEGAL_DOCS.map((d) => (
+          <Link key={d.slug} href={`/legal/${d.slug}`} className="press flex items-center underline underline-offset-2">
+            {d.title}
+          </Link>
+        ))}
+      </nav>
+      {info.length > 0 && (
+        <p className="mt-2">{info.map(([k, v]) => `${k} ${v}`).join(" · ")}</p>
+      )}
+      <p className="mt-2">{DISCLAIMER}</p>
       <p className="mt-2">© 사주300</p>
     </footer>
   );
 }
-
-
-
-

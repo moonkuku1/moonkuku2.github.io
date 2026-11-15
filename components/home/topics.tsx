@@ -58,7 +58,7 @@ export function Topics() {
                   {q.title}
                   <span className="price block text-xs text-text-sub">{q.price}원</span>
                 </p>
-                <AddButton id={q.id} title={q.title} />
+                <AddButton id={q.id} title={q.title} source="chip" />
               </li>
             ))}
           </ul>
@@ -114,3 +114,4 @@ export function Topics() {
     </section>
   );
 }
+

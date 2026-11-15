@@ -120,6 +120,14 @@ describe("POST /api/profile", () => {
     expect(j.card.recommendations).toHaveLength(3);
     expect(JSON.stringify(j)).not.toContain("2000-01-01");
   });
+  it("같은 사주를 두 번 보내도(두 번째는 캐시) 샘플 문장이라는 표시가 유지된다", async () => {
+    delete process.env.LLM_API_KEY;
+    const first = await (await call({ ...body, year: 1977, month: 7, day: 7 })).json();
+    const second = await (await call({ ...body, year: 1977, month: 7, day: 7 })).json();
+    expect(first.sample).toBe(true);
+    expect(second.sample).toBe(true);
+    expect(JSON.stringify(second.card.profile)).toBe(JSON.stringify(first.card.profile));
+  });
   it("음력과 윤달도 받는다", async () => {
     delete process.env.LLM_API_KEY;
     const j = await (await call({ ...body, calendar: "lunar", year: 2020, month: 4, day: 15, leap: true, hour: 12, minute: 0 })).json();
@@ -153,3 +161,4 @@ describe("POST /api/profile", () => {
     expect(last).toBe(429);
   });
 });
+

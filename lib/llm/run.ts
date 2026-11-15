@@ -4,6 +4,7 @@ import { calculateChart, type Chart, type ChartInput } from "../saju/chart";
 import { judge, type Reference } from "../verdict/engine";
 import { resolveRecipe } from "../verdict/recipes";
 import type { Verdict } from "../verdict/types";
+import { BudgetExceededError } from "./budget";
 import { PROMPT_VERSION, loadLlmConfig, type LlmConfig } from "./config";
 import { guideOfQuestion, type GuideId } from "./guide";
 import { buildP1 } from "./prompts/p1-profile";
@@ -89,12 +90,13 @@ function resolveDeps(d: Deps) {
 }
 
 // ───────── P1 프로필 ─────────
-export async function getProfile(chart: Chart, deps: Deps = {}): Promise<{ profile: Profile; source: "cache" | "llm" | "sample" }> {
+/** sample: 지금 보여 주는 프로필 문장이 샘플 문장인지(캐시에서 가져와도 만들 때의 값을 따른다) */
+export async function getProfile(chart: Chart, deps: Deps = {}): Promise<{ profile: Profile; source: "cache" | "llm" | "sample"; sample: boolean }> {
   const r = resolveDeps(deps);
   const live = r.config.mode === "live";
   const key = `profile:${chartHash(chart)}`;
   const hit = await r.profiles.get(key);
-  if (usable(hit, PROMPT_VERSION, live)) return { profile: hit.value, source: "cache" };
+  if (usable(hit, PROMPT_VERSION, live)) return { profile: hit.value, source: "cache", sample: hit.sample };
 
   const input = buildProfileInput(chart);
   let profile: Profile;
@@ -114,7 +116,7 @@ export async function getProfile(chart: Chart, deps: Deps = {}): Promise<{ profi
     }, r.notify, { type: "generation-failed" });
   }
   await r.profiles.set(key, { value: profile, promptVersion: PROMPT_VERSION, sample: source === "sample", createdAt: new Date().toISOString() } satisfies Entry<Profile>);
-  return { profile, source };
+  return { profile, source, sample: source === "sample" };
 }
 
 /** 모델을 부르고, 검사를 통과할 때까지 최대 두 번 만든다. 두 번 다 실패하면 운영자에게 알리고 오류를 던진다. */
@@ -136,6 +138,8 @@ async function generateChecked<T>(
       all.push(...result.problems.map((p) => `[${i}회] ${p}`));
     } catch (e) {
       all.push(`[${i}회] ${(e as Error).message}`);
+      // 하루 한도를 넘었으면 다시 시도해도 소용없다
+      if (e instanceof BudgetExceededError) break;
     }
   }
   await notify({ ...event, problems: all });
@@ -230,3 +234,5 @@ export async function answerQuestion(req: AnswerRequest, deps: Deps = {}): Promi
   await r.answers.set(key, { value: { answer, model, aiReviewed }, promptVersion: PROMPT_VERSION, sample: source === "sample", createdAt: new Date().toISOString() });
   return { status: "ok", answer, verdict, profile, guide, meta: { source, model, aiReviewed, promptVersion: PROMPT_VERSION, attempts: counter.attempts } };
 }
+
+

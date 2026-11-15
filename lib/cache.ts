@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHmac, randomBytes } from "node:crypto";
 import type { Chart } from "./saju/chart";
 
 /**
@@ -36,7 +36,15 @@ export class MemoryStore<T> implements KeyValueStore<T> {
   }
 }
 
-/** 명식 해시: 사주 글자·성별·출생 시각(대운 시작 나이에 쓰임)을 합쳐 한 줄로 만든다. 원래 값은 되돌릴 수 없다. */
+/**
+ * 해시에 섞는 비밀 값. 생년월일은 경우의 수가 적어서 그냥 해시하면 모든 날짜를 대입해 원래 값을 알아낼 수 있다.
+ * 그래서 서버만 아는 비밀 값을 섞는다. 환경변수 CACHE_HASH_SECRET으로 정하고(저장소를 DB로 바꿀 때는 꼭 정해야 한다),
+ * 없으면 서버가 켜질 때마다 새로 만든다(이때는 메모리 캐시도 함께 사라지므로 문제없다).
+ */
+const g2 = globalThis as unknown as { __saju300HashSecret?: string };
+const hashSecret = () => process.env.CACHE_HASH_SECRET || (g2.__saju300HashSecret ??= randomBytes(32).toString("hex"));
+
+/** 명식 해시: 사주 글자·성별·출생 시각(대운 시작 나이에 쓰임)을 비밀 값과 섞어 한 줄로 만든다. 비밀 값 없이는 원래 값을 알아낼 수 없다. */
 export function chartHash(chart: Chart): string {
   const p = chart.pillars;
   const canonical = JSON.stringify({
@@ -46,7 +54,7 @@ export function chartHash(chart: Chart): string {
     c: chart.clock ? [chart.clock.hour, chart.clock.minute] : null,
     l: chart.input.options?.lateZiSameDay ?? false,
   });
-  return createHash("sha256").update(canonical).digest("hex").slice(0, 32);
+  return createHmac("sha256", hashSecret()).update(canonical).digest("hex").slice(0, 32);
 }
 
 export type Reference = { year: number; month: number };
@@ -64,3 +72,4 @@ type Stores = { profiles: MemoryStore<unknown>; answers: MemoryStore<unknown> };
 const g = globalThis as unknown as { __saju300Stores?: Stores };
 /** 개발 서버가 코드를 다시 읽어도 저장소가 비지 않도록 전역에 둔다 */
 export const defaultStores: Stores = (g.__saju300Stores ??= { profiles: new MemoryStore(), answers: new MemoryStore() });
+

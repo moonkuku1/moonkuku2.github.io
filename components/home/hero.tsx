@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { AddButton } from "@/components/cart";
 import { FACE } from "@/components/home/face";
@@ -7,6 +8,7 @@ import { prefersReducedMotion } from "@/components/use-scroll-spy";
 import type { ProfileCard } from "@/lib/profile-card";
 import { IMG } from "@/lib/questions";
 import { ELEMENT_COLOR } from "@/lib/result";
+import { track } from "@/lib/track";
 
 /**
  * 첫 화면: 생년월일 입력 하나 → 무료 사주 카드(명식표, 키워드, 삼백이의 오늘 한 마디, 내 사주가 궁금해할 질문 3개).
@@ -15,6 +17,21 @@ import { ELEMENT_COLOR } from "@/lib/result";
 type Form = { calendar: "solar" | "lunar"; year: string; month: string; day: string; leap: boolean; time: string; gender: "" | "male" | "female" };
 const EMPTY: Form = { calendar: "solar", year: "", month: "", day: "", leap: false, time: "", gender: "" };
 const KEY = "saju300-me";
+
+/** 서버에 보내는 값(요청 본문으로만 보내고 주소에는 넣지 않는다) */
+function birthBody(form: Form) {
+  const [hh, mm] = form.time ? form.time.split(":").map(Number) : [null, 0];
+  return {
+    calendar: form.calendar,
+    year: Number(form.year),
+    month: Number(form.month),
+    day: Number(form.day),
+    leap: form.calendar === "lunar" ? form.leap : undefined,
+    hour: hh,
+    minute: mm,
+    gender: form.gender,
+  };
+}
 
 const field = "min-h-11 w-full rounded-input border border-gold/30 bg-night px-2 text-sm text-text focus:border-gold";
 const seg = (on: boolean) => `press flex-1 rounded-input border text-sm font-medium ${on ? "border-gold bg-gold text-night" : "border-gold/30 text-text-sub"}`;
@@ -26,10 +43,17 @@ export function Hero() {
   const [editing, setEditing] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sharing, setSharing] = useState(false);
+  const [shareError, setShareError] = useState<string | null>(null);
   const [maxYear, setMaxYear] = useState(2026);
   const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // 탭에서 처음 열었을 때 한 번만 알린다
+    if (!sessionStorage.getItem("saju300-seen")) {
+      sessionStorage.setItem("saju300-seen", "1");
+      track("home_view");
+    }
     setMaxYear(new Date().getFullYear());
     try {
       const saved = JSON.parse(sessionStorage.getItem(KEY) ?? "null");
@@ -51,29 +75,19 @@ export function Hero() {
     setError(null);
     if (!form.year || !form.month || !form.day) return setError("생년월일을 모두 골라 주세요.");
     if (!form.gender) return setError("성별을 골라 주세요. 대운의 방향이 달라져요.");
-    const [hh, mm] = form.time ? form.time.split(":").map(Number) : [null, 0];
     setBusy(true);
     try {
       const res = await fetch("/api/profile", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          calendar: form.calendar,
-          year: Number(form.year),
-          month: Number(form.month),
-          day: Number(form.day),
-          leap: form.calendar === "lunar" ? form.leap : undefined,
-          hour: hh,
-          minute: mm,
-          gender: form.gender,
-        }),
-      });
-      const json = await res.json();
+        body: JSON.stringify(birthBody(form)),
+      });      const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "잠시 후 다시 시도해 주세요.");
       setCard(json.card);
       setSample(json.sample);
       setEditing(false);
       sessionStorage.setItem(KEY, JSON.stringify({ form, card: json.card, sample: json.sample }));
+      track("card_created", { sample: json.sample });
       // 결과가 보이는 곳으로 부드럽게 이동하고, 읽어 주는 프로그램이 결과를 알 수 있게 포커스를 옮긴다
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" });
@@ -83,6 +97,34 @@ export function Hero() {
       setError((err as Error).message);
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function saveImage() {
+    setShareError(null);
+    setSharing(true);
+    try {
+      const res = await fetch("/api/share/card", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(birthBody(form)) });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? "이미지를 만들지 못했어요.");
+      const blob = await res.blob();
+      const file = new File([blob], "saju300-내사주카드.png", { type: "image/png" });
+      track("share_card");
+      // 휴대폰에서는 공유 창을 열고, 안 되면 이미지를 내려받는다
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: "내 사주 카드" });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = file.name;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+      }
+    } catch (err) {
+      if ((err as DOMException).name === "AbortError") return; // 공유 창을 닫은 경우
+      setShareError((err as Error).message);
+    } finally {
+      setSharing(false);
     }
   }
 
@@ -192,7 +234,7 @@ export function Hero() {
               <button type="submit" disabled={busy} className="press mt-3 w-full rounded-pill bg-gold py-3 font-bold text-night disabled:opacity-60">
                 {busy ? "계산하고 있어요…" : "내 사주 무료로 보기"}
               </button>
-              <p className="mt-2 text-xs leading-relaxed text-text-sub">생년월일은 서버에 저장하지 않아요. 이 탭에서만 잠깐 기억하고, 탭을 닫으면 지워져요.</p>
+              <p className="mt-2 text-xs leading-relaxed text-text-sub">생년월일은 서버에 저장하지 않아요. 이 탭에서만 잠깐 기억하고, 탭을 닫으면 지워져요.{" "}<Link href="/legal/privacy" className="underline underline-offset-2">개인정보 안내</Link></p>
             </form>
           )}
         </div>
@@ -200,7 +242,7 @@ export function Hero() {
 
       {card && (
         <div ref={resultRef} tabIndex={-1} className="scroll-mt-28 px-4 pt-6 outline-none">
-          <ProfileResult card={card} sample={sample} onReset={forget} />
+          <ProfileResult card={card} sample={sample} onReset={forget} onSave={saveImage} saving={sharing} saveError={shareError} />
         </div>
       )}
     </section>
@@ -209,7 +251,7 @@ export function Hero() {
 
 const ELEMENT_KO = { wood: "목", fire: "화", earth: "토", metal: "금", water: "수" } as const;
 
-function ProfileResult({ card, sample, onReset }: { card: ProfileCard; sample: boolean; onReset: () => void }) {
+function ProfileResult({ card, sample, onReset, onSave, saving, saveError }: { card: ProfileCard; sample: boolean; onReset: () => void; onSave: () => void; saving: boolean; saveError: string | null }) {
   return (
     <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
       {/* 내 사주 카드 */}
@@ -263,6 +305,10 @@ function ProfileResult({ card, sample, onReset }: { card: ProfileCard; sample: b
             </li>
           ))}
         </ul>
+        <button type="button" onClick={onSave} disabled={saving} className="press mt-3 w-full rounded-pill border border-gold text-sm font-bold text-gold disabled:opacity-60">
+          {saving ? "이미지를 만들고 있어요…" : "이미지로 저장·공유하기"}
+        </button>
+        {saveError && <p role="alert" className="mt-2 rounded-input border border-seal bg-seal/15 p-2 text-sm">{saveError}</p>}
         {sample && <p className="mt-2 text-xs text-text-sub">AI 연결 전이라 키워드 문장은 계산값으로 채운 샘플 문장이에요. 사주 글자와 분석 값은 실제 계산이에요.</p>}
         {card.notes.map((n) => (
           <p key={n} className="mt-2 rounded-input border border-gold/20 bg-night/60 p-2 text-xs leading-relaxed text-text-sub">
@@ -299,7 +345,7 @@ function ProfileResult({ card, sample, onReset }: { card: ProfileCard; sample: b
                   {r.title}
                   <span className="price block text-xs text-text-sub">하나에 {r.price}원</span>
                 </p>
-                <AddButton id={r.questionId} title={r.title} />
+                <AddButton id={r.questionId} title={r.title} source="rec" />
               </li>
             ))}
           </ul>
@@ -308,4 +354,7 @@ function ProfileResult({ card, sample, onReset }: { card: ProfileCard; sample: b
     </div>
   );
 }
+
+
+
 
