@@ -8,6 +8,7 @@ import { analyzeYongshin, type YongshinAnalysis } from "./analysis/yongshin";
 import { correctClock, type ClockMode, type ClockResult } from "./clock";
 import type { DayHourOptions } from "./day-hour";
 import type { Pillar } from "./ganji";
+import { isValidDate } from "./calendar";
 import { lunarToSolar } from "./lunar";
 import { fourPillars, type FourPillars } from "./pillars";
 import { minutesOf } from "./solar-terms";
@@ -70,6 +71,10 @@ const pad = (n: number) => String(n).padStart(2, "0");
 export function calculateChart(input: ChartInput): Chart {
   const solar = input.calendar === "lunar" ? lunarToSolar(input.year, input.month, input.day, input.leap ?? false) : { year: input.year, month: input.month, day: input.day };
 
+  // 2월 30일 같은 없는 날짜가 시각 보정 단계에서 조용히 다음 달로 넘어가지 않게 먼저 막는다
+  if (!isValidDate(solar.year, solar.month, solar.day)) throw new Error("없는 날짜예요.");
+  if (input.hour !== null && (input.hour < 0 || input.hour > 23 || (input.minute ?? 0) < 0 || (input.minute ?? 0) > 59)) throw new Error("없는 시각이에요.");
+
   const notes: Chart["notes"] = [];
   let clock: ClockResult | null = null;
   let target = { ...solar, hour: input.hour, minute: input.minute ?? 0 };
@@ -110,4 +115,5 @@ export function calculateChart(input: ChartInput): Chart {
     lowerConfidence: input.hour === null,
   };
 }
+
 

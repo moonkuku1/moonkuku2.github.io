@@ -49,8 +49,25 @@
 - 확신도: (지지 신호 합 − 반대 신호 합) 5 이상 강, 2~4 중, 1 이하 약. 출생 시간을 모르거나 1~3위 점수 차가 1 이하면 한 단계 낮춘다.
 - 기준 연월의 세운은 입춘 기준으로 정한다(예: 2027년 1월은 2026년 세운).
 
+## AI 문장 생성 구조 (요구사항 3장)
+```
+POST /api/answer            app/api/answer/route.ts   입력 검사 · 횟수 제한 · 결제 확인(연결 전) · 오류를 상태 코드로
+ └ answerQuestion()         lib/llm/run.ts            판정(코드) → 캐시 → 프로필(P1) → 답변(P2) → 코드 검수 → 저장
+    ├ judge()               lib/verdict/engine.ts     판정·확신도·시기 (AI가 바꾸지 못함)
+    ├ getProfile()          lib/llm/run.ts            명식당 1회, 저장 후 재사용
+    ├ buildP1/P2/P4/P5      lib/llm/prompts/*         기준 문서 문구 그대로 (P2 9번 규칙만 풀이꾼 말투)
+    ├ makeCaller()          lib/llm/providers.ts      anthropic / openai / google, 회사별 차이는 이 파일 안에서만
+    ├ reviewAnswer()        lib/llm/review.ts         P5 코드 검수. 실패하면 1회 다시, 또 실패하면 운영자 알림 + 환불 대상
+    └ sampleAnswer()        lib/llm/sample.ts         AI 키가 없을 때의 샘플 문장 모드
+캐시                          lib/cache.ts              (명식 해시 + 질문 ID + 기준 연월), 프롬프트 버전이 다르거나 샘플 항목이면 새로 만듦
+```
+- 환경변수: `LLM_PROVIDER`, `LLM_MODEL`, `LLM_API_KEY`(서버 전용), `PAYMENT_MODE`, `OPERATOR_WEBHOOK_URL`. 이름만 `.env.example`에 있다.
+- AI에는 생년월일을 보내지 않는다. 사주 글자와 분석 값, 호칭(8자 이내 한글·영문·숫자)만 보낸다.
+- 신호·판정·확신도는 AI 입력으로만 들어가고 출력에서 바꿀 수 없다(headline에 판정 값이 있는지 검수).
+
 ## 이후 작업과의 연결
 - 결과 화면의 샘플 문장은 `lib/result.ts`의 `SAMPLES`(풀이꾼별 말투 3종)다. 판정 엔진·P2가 붙으면 같은 `voice` 값을 프롬프트에 넣는다.
 - 결제는 아직 연결 전이다. `/cart`의 결제 버튼은 안내만 보여 준다.
 - 홈의 ‘오늘 한 마디’는 샘플 문장 모드다. 판정 엔진이 붙으면 같은 입력칸에 연결한다.
+
 

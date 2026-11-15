@@ -54,7 +54,16 @@ describe("calculateChart", () => {
     const b = JSON.stringify(calculateChart({ ...base }));
     expect(a).toBe(b);
   });
+  it("없는 양력 날짜·시각은 오류 (시각 보정 단계에서 다음 달로 넘어가지 않는다)", () => {
+    expect(() => calculateChart({ ...base, year: 2023, month: 2, day: 29 })).toThrow("없는 날짜");
+    expect(() => calculateChart({ ...base, month: 2, day: 30 })).toThrow("없는 날짜");
+    expect(() => calculateChart({ ...base, month: 13, day: 1 })).toThrow("없는 날짜");
+    expect(() => calculateChart({ ...base, hour: 24 })).toThrow("없는 시각");
+    expect(() => calculateChart({ ...base, minute: 60 })).toThrow("없는 시각");
+    expect(() => calculateChart({ ...base, hour: null, month: 2, day: 30 })).toThrow("없는 날짜");
+  });
   it("없는 음력 날짜는 오류", () => {
     expect(() => calculateChart({ ...base, calendar: "lunar", year: 2021, month: 4, day: 1, leap: true })).toThrow();
   });
 });
+
