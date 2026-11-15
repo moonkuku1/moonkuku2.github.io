@@ -36,6 +36,19 @@
 - 공유 이미지는 서버에서 `next/og`로 만들고, 주문 번호로 결과를 읽는다. 생년월일은 이미지에도 주소에도 넣지 않는다. 한글 글꼴은 이미지에 쓸 글자만 Google Fonts에서 받아 온다.
 - 결과 페이지의 링크 미리보기(OG) 이미지는 `generateMetadata`가 `/api/share/og`로 연결한다.
 
+## 판정 엔진 구조 (요구사항 1~2장)
+```
+입력(생년월일시·성별) → lib/saju/chart.ts  calculateChart()      만세력·분석(오행·십성·합충·신살·대운·신강신약·격국·도움이 되는 오행)
+질문 ID + 기준 연월    → lib/verdict/recipes.ts resolveRecipe()    질문별 레시피, 없으면 카테고리 공통 레시피
+                      → lib/signals/context.ts buildContext()     (명식, 세운 연도, 월운 번호)로 신호 계산에 쓸 값 준비
+                      → lib/signals/library.ts SIGNALS            신호 60개(순수 함수)
+                      → lib/verdict/engine.ts  judge()            판정·확신도·시기·근거 신호·반대 신호·안전 표시
+```
+- 판정 값(`Verdict`)은 AI 문장 생성(P2)의 입력이 된다. AI는 이 값을 바꾸지 못한다.
+- 가중치와 신호는 데이터(`data/recipes.json`, `data/recipe-defaults.json`)에 있고, 틀린 데이터는 바로 오류로 알린다.
+- 확신도: (지지 신호 합 − 반대 신호 합) 5 이상 강, 2~4 중, 1 이하 약. 출생 시간을 모르거나 1~3위 점수 차가 1 이하면 한 단계 낮춘다.
+- 기준 연월의 세운은 입춘 기준으로 정한다(예: 2027년 1월은 2026년 세운).
+
 ## 이후 작업과의 연결
 - 결과 화면의 샘플 문장은 `lib/result.ts`의 `SAMPLES`(풀이꾼별 말투 3종)다. 판정 엔진·P2가 붙으면 같은 `voice` 값을 프롬프트에 넣는다.
 - 결제는 아직 연결 전이다. `/cart`의 결제 버튼은 안내만 보여 준다.

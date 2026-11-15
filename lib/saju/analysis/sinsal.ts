@@ -37,6 +37,10 @@ export function twelveSinsalOf(baseBranch: number, target: number): TwelveName {
 
 const br = (names: string) => names.split("").map((c) => B(c));
 
+/** 일간으로 천을귀인 지지들과 문창귀인 지지를 구한다(세운·월운 신호에서 쓴다). */
+export const cheoneulBranchesOf = (dayStemName: string): number[] => CHEONEUL[dayStemName];
+export const munchangBranchOf = (dayStemName: string): number => MUNCHANG[dayStemName];
+
 // 천을귀인(일간 기준): 갑무경 축미, 을기 자신, 병정 해유, 신 인오, 임계 사묘
 const CHEONEUL: Record<string, number[]> = { 갑: br("축미"), 무: br("축미"), 경: br("축미"), 을: br("자신"), 기: br("자신"), 병: br("해유"), 정: br("해유"), 신: br("인오"), 임: br("사묘"), 계: br("사묘") };
 // 문창귀인(일간 기준): 갑 사, 을 오, 병 신, 정 유, 무 신, 기 유, 경 해, 신 자, 임 인, 계 묘

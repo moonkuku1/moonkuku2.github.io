@@ -1,0 +1,258 @@
+{
+  "_note": "질문별 정교한 레시피(요구사항 2.2, 2.3). 여기 없는 질문은 data/recipe-defaults.json의 카테고리 공통 레시피를 쓴다. 신호 가중치는 명리 전문가 검수 전의 초안이다.",
+  "L04": {
+    "verdictType": "시기(월)",
+    "timingScope": "다음 12개월",
+    "signals": [
+      { "key": "yearSpouseStar", "weight": 3, "dir": "+" },
+      { "key": "monthBranchCombinesDay", "weight": 2, "dir": "+" },
+      { "key": "monthDohwa", "weight": 1, "dir": "+" },
+      { "key": "monthBranchClashesDay", "weight": 2, "dir": "-" },
+      { "key": "yearPeer", "weight": 1, "dir": "-" }
+    ],
+    "rule": { "kind": "timing-month", "months": 12, "top": 2, "closeGap": 1 },
+    "safety": []
+  },
+  "L05": {
+    "verdictType": "예/아니오/조건부",
+    "timingScope": "올해",
+    "signals": [
+      { "key": "yearSpouseStar", "weight": 3, "dir": "+" },
+      { "key": "yearBranchCombinesDay", "weight": 2, "dir": "+" },
+      { "key": "yearDohwa", "weight": 1, "dir": "+" },
+      { "key": "yearHelpfulElement", "weight": 1, "dir": "+" },
+      { "key": "luckSpouseStar", "weight": 1, "dir": "+" },
+      { "key": "yearBranchClashesDay", "weight": 2, "dir": "-" },
+      { "key": "yearPeer", "weight": 1, "dir": "-" }
+    ],
+    "rule": { "kind": "yesno", "yesAt": 3, "noAt": 0 },
+    "safety": []
+  },
+  "L10": {
+    "verdictType": "조건부+시기",
+    "timingScope": "다음 12개월",
+    "signals": [
+      { "key": "yearSpouseStar", "weight": 2, "dir": "+" },
+      { "key": "monthSpouseStar", "weight": 2, "dir": "+" },
+      { "key": "monthBranchCombinesDay", "weight": 2, "dir": "+" },
+      { "key": "monthDohwa", "weight": 1, "dir": "+" },
+      { "key": "natalDayBranchClashed", "weight": 1, "dir": "-" },
+      { "key": "monthBranchClashesDay", "weight": 2, "dir": "-" }
+    ],
+    "rule": { "kind": "yesno+timing-month", "yesAt": 3, "noAt": 0, "months": 12, "top": 2, "closeGap": 1 },
+    "safety": ["no-assertion"]
+  },
+  "L11": {
+    "verdictType": "시기(월)",
+    "timingScope": "다음 12개월",
+    "signals": [
+      { "key": "yearSpouseStar", "weight": 1, "dir": "+" },
+      { "key": "monthSpouseStar", "weight": 2, "dir": "+" },
+      { "key": "monthBranchCombinesDay", "weight": 2, "dir": "+" },
+      { "key": "monthDohwa", "weight": 2, "dir": "+" },
+      { "key": "monthHelpfulElement", "weight": 1, "dir": "+" },
+      { "key": "monthBranchClashesDay", "weight": 2, "dir": "-" },
+      { "key": "monthAvoidElement", "weight": 1, "dir": "-" }
+    ],
+    "rule": { "kind": "timing-month", "months": 12, "top": 2, "closeGap": 1 },
+    "safety": []
+  },
+  "M01": {
+    "verdictType": "시기(연)",
+    "timingScope": "앞으로 7년",
+    "signals": [
+      { "key": "yearSpouseStar", "weight": 3, "dir": "+" },
+      { "key": "yearBranchCombinesDay", "weight": 3, "dir": "+" },
+      { "key": "luckSpouseStar", "weight": 2, "dir": "+" },
+      { "key": "yearCheoneul", "weight": 1, "dir": "+" },
+      { "key": "yearHelpfulElement", "weight": 1, "dir": "+" },
+      { "key": "yearBranchClashesDay", "weight": 2, "dir": "-" },
+      { "key": "yearPeer", "weight": 1, "dir": "-" },
+      { "key": "yearSamjae", "weight": 1, "dir": "-" }
+    ],
+    "rule": { "kind": "timing-year", "years": 7, "top": 2, "closeGap": 1 },
+    "safety": []
+  },
+  "M07": {
+    "verdictType": "시기(연)",
+    "timingScope": "앞으로 7년",
+    "signals": [
+      { "key": "yearSpouseStar", "weight": 3, "dir": "+" },
+      { "key": "yearBranchCombinesDay", "weight": 2, "dir": "+" },
+      { "key": "yearCheoneul", "weight": 1, "dir": "+" },
+      { "key": "yearHelpfulElement", "weight": 2, "dir": "+" },
+      { "key": "yearBranchClashesDay", "weight": 3, "dir": "-" },
+      { "key": "yearAvoidElement", "weight": 2, "dir": "-" },
+      { "key": "yearSamjae", "weight": 1, "dir": "-" }
+    ],
+    "rule": { "kind": "best-worst-year", "years": 7, "top": 2 },
+    "safety": []
+  },
+  "W03": {
+    "verdictType": "시기(연)",
+    "timingScope": "앞으로 7년",
+    "signals": [
+      { "key": "yearWealth", "weight": 3, "dir": "+" },
+      { "key": "yearFood", "weight": 1, "dir": "+" },
+      { "key": "yearHelpfulElement", "weight": 2, "dir": "+" },
+      { "key": "luckWealth", "weight": 2, "dir": "+" },
+      { "key": "luckHelpfulElement", "weight": 1, "dir": "+" },
+      { "key": "yearPeer", "weight": 2, "dir": "-" },
+      { "key": "yearAvoidElement", "weight": 2, "dir": "-" },
+      { "key": "yearBranchClashesDay", "weight": 1, "dir": "-" }
+    ],
+    "rule": { "kind": "timing-year", "years": 7, "top": 2, "closeGap": 1 },
+    "safety": ["no-assertion"]
+  },
+  "W04": {
+    "verdictType": "등급",
+    "timingScope": "올해",
+    "signals": [
+      { "key": "natalWealthStrong", "weight": 1, "dir": "+" },
+      { "key": "yearWealth", "weight": 3, "dir": "+" },
+      { "key": "yearFood", "weight": 1, "dir": "+" },
+      { "key": "yearHelpfulElement", "weight": 2, "dir": "+" },
+      { "key": "luckWealth", "weight": 1, "dir": "+" },
+      { "key": "yearPeer", "weight": 2, "dir": "-" },
+      { "key": "yearAvoidElement", "weight": 2, "dir": "-" },
+      { "key": "yearBranchClashesDay", "weight": 1, "dir": "-" },
+      { "key": "natalWealthAbsent", "weight": 1, "dir": "-" }
+    ],
+    "rule": { "kind": "grade", "highAt": 4, "midAt": 1 },
+    "safety": ["no-assertion"]
+  },
+  "W10": {
+    "verdictType": "시기(연)",
+    "timingScope": "앞으로 7년",
+    "signals": [
+      { "key": "yearPeer", "weight": 3, "dir": "+" },
+      { "key": "yearAvoidElement", "weight": 3, "dir": "+" },
+      { "key": "yearBranchClashesDay", "weight": 2, "dir": "+" },
+      { "key": "yearBranchClashesMonth", "weight": 1, "dir": "+" },
+      { "key": "yearSamjae", "weight": 1, "dir": "+" },
+      { "key": "luckAvoidElement", "weight": 1, "dir": "+" },
+      { "key": "yearHelpfulElement", "weight": 2, "dir": "-" },
+      { "key": "yearPrint", "weight": 1, "dir": "-" }
+    ],
+    "rule": { "kind": "timing-year", "years": 7, "top": 2, "closeGap": 1 },
+    "safety": ["no-assertion", "consult:투자"]
+  },
+  "W11": {
+    "verdictType": "예/아니오/조건부",
+    "timingScope": "올해",
+    "signals": [
+      { "key": "natalWealthStrong", "weight": 1, "dir": "+" },
+      { "key": "yearHelpfulElement", "weight": 2, "dir": "+" },
+      { "key": "yearCheoneul", "weight": 1, "dir": "+" },
+      { "key": "natalPeerStrong", "weight": 1, "dir": "-" },
+      { "key": "yearPeer", "weight": 2, "dir": "-" },
+      { "key": "yearAvoidElement", "weight": 2, "dir": "-" },
+      { "key": "yearBranchClashesDay", "weight": 1, "dir": "-" }
+    ],
+    "rule": { "kind": "yesno", "yesAt": 4, "noAt": 1 },
+    "safety": ["no-assertion", "consult:법률", "consult:투자"]
+  },
+  "J03": {
+    "verdictType": "조건부",
+    "timingScope": "올해",
+    "signals": [
+      { "key": "yearOfficer", "weight": 2, "dir": "+" },
+      { "key": "yearHelpfulElement", "weight": 2, "dir": "+" },
+      { "key": "luckOfficer", "weight": 1, "dir": "+" },
+      { "key": "yearBranchCombinesDay", "weight": 1, "dir": "+" },
+      { "key": "yearYeokma", "weight": 2, "dir": "-" },
+      { "key": "yearBranchClashesMonth", "weight": 2, "dir": "-" },
+      { "key": "yearAvoidElement", "weight": 1, "dir": "-" },
+      { "key": "natalYeokma", "weight": 1, "dir": "-" }
+    ],
+    "rule": { "kind": "yesno", "yesAt": 3, "noAt": 0 },
+    "safety": []
+  },
+  "J04": {
+    "verdictType": "시기(월)",
+    "timingScope": "다음 12개월",
+    "signals": [
+      { "key": "monthYeokma", "weight": 2, "dir": "+" },
+      { "key": "monthOfficer", "weight": 2, "dir": "+" },
+      { "key": "monthHelpfulElement", "weight": 1, "dir": "+" },
+      { "key": "monthCheoneul", "weight": 1, "dir": "+" },
+      { "key": "yearYeokma", "weight": 2, "dir": "+" },
+      { "key": "yearOfficer", "weight": 1, "dir": "+" },
+      { "key": "yearBranchClashesMonth", "weight": 1, "dir": "+" },
+      { "key": "monthBranchClashesDay", "weight": 1, "dir": "-" },
+      { "key": "monthAvoidElement", "weight": 2, "dir": "-" },
+      { "key": "yearAvoidElement", "weight": 1, "dir": "-" }
+    ],
+    "rule": { "kind": "timing-month", "months": 12, "top": 2, "closeGap": 1 },
+    "safety": []
+  },
+  "J09": {
+    "verdictType": "시기(월)",
+    "timingScope": "다음 12개월",
+    "signals": [
+      { "key": "monthPrint", "weight": 2, "dir": "+" },
+      { "key": "monthOfficer", "weight": 1, "dir": "+" },
+      { "key": "monthMunchang", "weight": 2, "dir": "+" },
+      { "key": "monthHelpfulElement", "weight": 1, "dir": "+" },
+      { "key": "yearPrint", "weight": 2, "dir": "+" },
+      { "key": "yearMunchang", "weight": 1, "dir": "+" },
+      { "key": "yearOfficer", "weight": 1, "dir": "+" },
+      { "key": "monthBranchClashesDay", "weight": 2, "dir": "-" },
+      { "key": "monthAvoidElement", "weight": 2, "dir": "-" },
+      { "key": "yearAvoidElement", "weight": 1, "dir": "-" }
+    ],
+    "rule": { "kind": "timing-month", "months": 12, "top": 2, "closeGap": 1 },
+    "safety": ["no-assertion"]
+  },
+  "Y01": {
+    "verdictType": "서술+그래프",
+    "timingScope": "올해 열두 달",
+    "signals": [
+      { "key": "yearHelpfulElement", "weight": 3, "dir": "+" },
+      { "key": "yearBranchCombinesDay", "weight": 1, "dir": "+" },
+      { "key": "yearCheoneul", "weight": 1, "dir": "+" },
+      { "key": "luckHelpfulElement", "weight": 1, "dir": "+" },
+      { "key": "monthHelpfulElement", "weight": 2, "dir": "+" },
+      { "key": "monthBranchCombinesDay", "weight": 1, "dir": "+" },
+      { "key": "monthCheoneul", "weight": 1, "dir": "+" },
+      { "key": "yearAvoidElement", "weight": 3, "dir": "-" },
+      { "key": "yearBranchClashesDay", "weight": 2, "dir": "-" },
+      { "key": "yearSamjae", "weight": 1, "dir": "-" },
+      { "key": "luckAvoidElement", "weight": 1, "dir": "-" },
+      { "key": "monthAvoidElement", "weight": 2, "dir": "-" },
+      { "key": "monthBranchClashesDay", "weight": 2, "dir": "-" }
+    ],
+    "rule": { "kind": "monthly-graph", "months": 12, "top": 2 },
+    "safety": []
+  },
+  "Y02": {
+    "verdictType": "시기(월)",
+    "timingScope": "다음 12개월",
+    "signals": [
+      { "key": "monthHelpfulElement", "weight": 2, "dir": "+" },
+      { "key": "monthBranchCombinesDay", "weight": 1, "dir": "+" },
+      { "key": "monthCheoneul", "weight": 1, "dir": "+" },
+      { "key": "yearHelpfulElement", "weight": 1, "dir": "+" },
+      { "key": "monthAvoidElement", "weight": 2, "dir": "-" },
+      { "key": "monthBranchClashesDay", "weight": 2, "dir": "-" },
+      { "key": "yearAvoidElement", "weight": 1, "dir": "-" }
+    ],
+    "rule": { "kind": "best-worst-month", "months": 12, "top": 2 },
+    "safety": []
+  },
+  "Y03": {
+    "verdictType": "서술",
+    "timingScope": "이번 달",
+    "signals": [
+      { "key": "yearHelpfulElement", "weight": 1, "dir": "+" },
+      { "key": "monthHelpfulElement", "weight": 2, "dir": "+" },
+      { "key": "monthBranchCombinesDay", "weight": 1, "dir": "+" },
+      { "key": "monthCheoneul", "weight": 1, "dir": "+" },
+      { "key": "yearAvoidElement", "weight": 1, "dir": "-" },
+      { "key": "monthAvoidElement", "weight": 2, "dir": "-" },
+      { "key": "monthBranchClashesDay", "weight": 2, "dir": "-" }
+    ],
+    "rule": { "kind": "grade", "highAt": 3, "midAt": 0, "at": "month" },
+    "safety": []
+  }
+}
