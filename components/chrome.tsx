@@ -9,11 +9,10 @@ import { prefersReducedMotion } from "@/components/use-scroll-spy";
 import { IMG } from "@/lib/questions";
 
 export const HOME_SECTIONS = [
-  { id: "today", label: "오늘" },
-  { id: "situations", label: "요즘 고민" },
+  { id: "me", label: "내 사주" },
   { id: "categories", label: "주제별" },
+  { id: "sample", label: "답변 예시" },
   { id: "guides", label: "풀이꾼" },
-  { id: "free", label: "무료" },
 ];
 
 export const SCROLL_KEY = "saju300-home-scroll";
@@ -94,9 +93,9 @@ export function BottomBar({ current = "home" }: { current?: "home" | "today" | "
           <span aria-hidden="true" className="text-lg leading-none">🏠</span>
           홈
         </Link>
-        <Link href="/#today" className={`${base} text-text-sub`}>
+        <Link href="/#me" className={`${base} text-text-sub`}>
           <span aria-hidden="true" className="text-lg leading-none">🌙</span>
-          오늘 한 마디
+          내 사주
         </Link>
         <button type="button" onClick={() => setNotice("내 풀이함은 준비 중이에요.")} className={`${base} text-text-sub`}>
           <span aria-hidden="true" className="text-lg leading-none">📜</span>
@@ -110,5 +109,6 @@ export function BottomBar({ current = "home" }: { current?: "home" | "today" | "
     </div>
   );
 }
+
 
 

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { clientIp, jsonResponse as json, kstToday, makeLimiter } from "../../../lib/http";
 import { loadLlmConfig } from "../../../lib/llm/config";
 import { AnswerGenerationError, answerQuestion } from "../../../lib/llm/run";
 
@@ -25,28 +26,10 @@ const Body = z.object({
   options: z.object({ lateZiSameDay: z.boolean().optional(), clockMode: z.enum(["dst-only", "utc9"]).optional() }).optional(),
 });
 
-// 한 서버 안에서만 세는 간단한 횟수 제한(AI 비용 보호). 분당 20번.
-const hits = new Map<string, number[]>();
-function limited(ip: string): boolean {
-  const now = Date.now();
-  const list = (hits.get(ip) ?? []).filter((t) => now - t < 60_000);
-  list.push(now);
-  hits.set(ip, list);
-  if (hits.size > 5000) hits.clear();
-  return list.length > 20;
-}
-
-/** 한국 시각 기준 현재 연·월(요구사항 3.8의 기준 연월) */
-function kstNow() {
-  const d = new Date(Date.now() + 9 * 3600 * 1000);
-  return { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1 };
-}
-
-const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { "cache-control": "no-store" } });
+const limited = makeLimiter(20);
 
 export async function POST(req: Request) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "local";
-  if (limited(ip)) return json({ error: "잠시 후에 다시 시도해 주세요." }, 429);
+  if (limited(clientIp(req))) return json({ error: "잠시 후에 다시 시도해 주세요." }, 429);
 
   let parsed;
   try {
@@ -83,7 +66,7 @@ export async function POST(req: Request) {
           options: b.options,
         },
         questionId: b.questionId,
-        reference: kstNow(),
+        reference: { year: kstToday().year, month: kstToday().month },
         userName: b.name,
       },
       { config },
@@ -107,3 +90,4 @@ export async function POST(req: Request) {
     return json({ error: "답변을 만드는 중 문제가 생겼어요." }, 500);
   }
 }
+

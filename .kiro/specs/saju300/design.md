@@ -25,7 +25,8 @@
 ## 화면과 파일
 | 화면 | 경로 | 파일 |
 |---|---|---|
-| 모바일 홈 | `/` | `app/page.tsx`, `components/chrome.tsx`(헤더·탭·아래 메뉴·담은 질문 줄), `components/home/*` |
+| 모바일 홈 | `/` | `app/page.tsx`, `components/chrome.tsx`(헤더·탭·아래 메뉴·담은 질문 줄), `components/home/hero.tsx`(입력·내 사주 카드), `topics.tsx`(고민 칩·주제 포스터), `rest.tsx`(답변 예시·풀이꾼·약속·바닥글) |
+| 무료 카드 API | `POST /api/profile` | `app/api/profile/route.ts`, `lib/profile-card.ts`, `lib/recommend.ts`, `lib/today.ts` |
 | 주제 페이지 | `/c/[code]` | `app/c/[code]/page.tsx`, `components/picker.tsx`(전체 선택/해제·필터·고정 요약) |
 | 장바구니 | `/cart` | `app/cart/page.tsx`, `components/cart-view.tsx`(주제별 요약·펼침·결제 전 확인) |
 | 결과 | `/r/[orderId]` | `app/r/[orderId]/page.tsx`, `components/result/*` |
@@ -69,5 +70,6 @@ POST /api/answer            app/api/answer/route.ts   입력 검사 · 횟수 �
 - 결과 화면의 샘플 문장은 `lib/result.ts`의 `SAMPLES`(풀이꾼별 말투 3종)다. 판정 엔진·P2가 붙으면 같은 `voice` 값을 프롬프트에 넣는다.
 - 결제는 아직 연결 전이다. `/cart`의 결제 버튼은 안내만 보여 준다.
 - 홈의 ‘오늘 한 마디’는 샘플 문장 모드다. 판정 엔진이 붙으면 같은 입력칸에 연결한다.
+
 
 
