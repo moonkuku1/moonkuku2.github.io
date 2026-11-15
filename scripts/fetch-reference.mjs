@@ -24,6 +24,8 @@ for (const y of [1900, 1920, 1960, 1988, 2000, 2024, 2028, 2050, 2100]) {
 for (const d of ["1900-02-28", "1900-03-01", "1904-02-29", "2000-02-29", "2024-02-29", "2096-02-29"]) dates.add(d);
 // 3) 서머타임·표준시 변경 시기 날짜
 for (const d of ["1948-06-01", "1954-03-21", "1961-08-10", "1987-05-10", "1988-05-08", "1988-10-09"]) dates.add(d);
+// 3-1) 기준 생년월일(data/saju/gate-cases.json)이 쓰는 날짜
+for (const c of JSON.parse(readFileSync(new URL("../data/saju/gate-cases.json", import.meta.url), "utf8"))) dates.add(c.kasiDay);
 // 4) 무작위(고정 씨앗) 날짜 120개: 1900~2100
 let seed = 20261114;
 const rnd = () => (seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296;
@@ -58,4 +60,5 @@ await Promise.all(Array.from({ length: 2 }, worker));
 out.sort((a, b) => a.date.localeCompare(b.date));
 writeFileSync(new URL("../data/saju/reference-kasi.json", import.meta.url), JSON.stringify(out));
 console.log(`저장: ${out.length}일 / 요청 ${list.length}일 (${out[0]?.date} ~ ${out.at(-1)?.date})`);
+
 

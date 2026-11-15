@@ -85,10 +85,11 @@ describe("자시와 야자시 (요구사항 1.4)", () => {
     expect(r.hour?.name).toBe("갑자"); // 기(5) → 갑자
     expect(r.dayDate).toEqual({ year: 2000, month: 1, day: 2 });
   });
-  it("야자시 옵션: 23시대도 당일 일주, 당일 일간의 자시", () => {
+  it("야자시 옵션: 일주만 당일, 시주는 다음 날 일간의 자시(기본과 같음)", () => {
     const r = dayAndHourPillars(2000, 1, 1, 23, 30, { lateZiSameDay: true });
     expect(r.day.name).toBe("무오");
-    expect(r.hour?.name).toBe("임자"); // 무(4) → 임자
+    expect(r.hour?.name).toBe("갑자"); // 다음 날(기미일) 일간 기 → 갑자
+    expect(r.hour?.name).toBe(dayAndHourPillars(2000, 1, 1, 23, 30).hour?.name);
   });
   it("0시대 새벽은 두 방식 모두 당일", () => {
     expect(dayAndHourPillars(2000, 1, 2, 0, 30).day.name).toBe("기미");

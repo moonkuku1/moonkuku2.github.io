@@ -2,6 +2,9 @@ import { analyzeElements, type ElementsAnalysis } from "./analysis/elements";
 import { majorLuck, monthLuck, yearLuck, type Gender, type MajorLuck, type MonthLuck } from "./analysis/luck";
 import { analyzeRelations, type Relation } from "./analysis/relations";
 import { analyzeSinsal, samjae, type SamjaeResult, type SinsalAnalysis } from "./analysis/sinsal";
+import { analyzeStrength, type StrengthAnalysis } from "./analysis/strength";
+import { analyzeStructure, type StructureAnalysis } from "./analysis/structure";
+import { analyzeYongshin, type YongshinAnalysis } from "./analysis/yongshin";
 import { correctClock, type ClockMode, type ClockResult } from "./clock";
 import type { DayHourOptions } from "./day-hour";
 import type { Pillar } from "./ganji";
@@ -37,6 +40,12 @@ export type Chart = {
   pillars: FourPillars;
   /** 오행 분포·십성·지장간 */
   elements: ElementsAnalysis;
+  /** 신강·신약(자리별 점수) */
+  strength: StrengthAnalysis;
+  /** 격국(월지 본기 기준) */
+  structure: StructureAnalysis;
+  /** 도움이 되는 오행·조심할 오행(억부+조후 단순형) */
+  yongshin: YongshinAnalysis;
   /** 합·충·형·파·해·원진 */
   relations: Relation[];
   /** 신살과 12신살 */
@@ -56,7 +65,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
 /**
  * 생년월일시(양력 또는 음력)로 사주 여덟 글자와 분석(오행·십성·합충·신살·대운)을 계산한다.
  * 같은 입력이면 항상 같은 값이다(요구사항 1.8).
- * 신강·신약, 격국, 용신은 유파마다 판정법이 달라 사장님 확인 후 별도로 추가한다.
+ * 신강·신약(자리별 점수), 격국(월지 본기 기준), 도움이 되는 오행(억부+조후 단순형)은 docs/saju-decisions.md 2장의 추천안이다.
  */
 export function calculateChart(input: ChartInput): Chart {
   const solar = input.calendar === "lunar" ? lunarToSolar(input.year, input.month, input.day, input.leap ?? false) : { year: input.year, month: input.month, day: input.day };
@@ -82,12 +91,17 @@ export function calculateChart(input: ChartInput): Chart {
   const birthMinutes = minutesOf(`${target.year}-${pad(target.month)}-${pad(target.day)}`, target.hour === null ? "12:00" : `${pad(target.hour)}:${pad(target.minute ?? 0)}`);
 
   const refYear = input.options?.referenceYear;
+  const elements = analyzeElements(pillars);
+  const strength = analyzeStrength(pillars);
   return {
     input,
     solarDate: solar,
     clock,
     pillars,
-    elements: analyzeElements(pillars),
+    elements,
+    strength,
+    structure: analyzeStructure(pillars),
+    yongshin: analyzeYongshin(pillars, elements, strength),
     relations: analyzeRelations(pillars),
     sinsal: analyzeSinsal(pillars),
     majorLuck: majorLuck(pillars, input.gender, birthMinutes, target.year),
@@ -96,3 +110,4 @@ export function calculateChart(input: ChartInput): Chart {
     lowerConfidence: input.hour === null,
   };
 }
+

@@ -30,8 +30,9 @@ function indexOf(stem: number, branch: number): number {
 export type DayHourOptions = {
   /**
    * 야자시 옵션(요구사항 1.4).
-   * false(기본): 23:00 이후는 다음 날 일주를 쓴다(자시를 한 덩어리로 보고 날짜를 넘긴다).
-   * true: 23:00~23:59도 당일 일주를 쓴다.
+   * false(기본): 23:00 이후는 일주도 다음 날 것을 쓴다(자시를 한 덩어리로 보고 23시에 날짜를 넘긴다).
+   * true: 23:00~23:59는 일주를 당일로 쓴다. 이때 시주는 두 방식 모두 "다음 날 일간 기준의 자시"다.
+   * (널리 쓰는 만세력 라이브러리 lunar-javascript와 같은 방식. 테스트로 대조함)
    */
   lateZiSameDay?: boolean;
 };
@@ -45,9 +46,14 @@ export function dayAndHourPillars(
   minute: number,
   options: DayHourOptions = {},
 ): { day: Pillar; hour: Pillar | null; dayDate: { year: number; month: number; day: number } } {
-  let date = { year, month, day };
-  if (hour !== null && hour >= 23 && !options.lateZiSameDay) date = addDays(year, month, day, 1);
-  const dayP = dayPillarOfDate(date.year, date.month, date.day);
-  const hourP = hour === null ? null : hourPillar(dayP.stem, hourBranchOf(hour, minute));
-  return { day: dayP, hour: hourP, dayDate: date };
+  const late = hour !== null && hour >= 23; // 23:00~23:59
+  const next = addDays(year, month, day, 1);
+  // 일주: 23시대에 날짜를 넘길지는 옵션으로. 시주의 천간은 23시대에 항상 다음 날 일간을 쓴다.
+  const dayDate = late && !options.lateZiSameDay ? next : { year, month, day };
+  const dayP = dayPillarOfDate(dayDate.year, dayDate.month, dayDate.day);
+  if (hour === null) return { day: dayP, hour: null, dayDate };
+  const hourDayDate = late ? next : { year, month, day };
+  const hourStemBase = late ? dayPillarOfDate(hourDayDate.year, hourDayDate.month, hourDayDate.day) : dayP;
+  return { day: dayP, hour: hourPillar(hourStemBase.stem, hourBranchOf(hour, minute)), dayDate };
 }
+
