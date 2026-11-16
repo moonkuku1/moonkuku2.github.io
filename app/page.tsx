@@ -1,6 +1,6 @@
 import { Hero } from "@/components/home/hero";
 import { GuideTopics } from "@/components/home/guide-topics";
-import { Footer, Promises, SampleAnswer } from "@/components/home/rest";
+import { Footer, FreeTools, Promises, SampleAnswer } from "@/components/home/rest";
 import { BottomBar, Header } from "@/components/chrome";
 import { ScrollMemory } from "@/components/scroll-memory";
 
@@ -16,6 +16,7 @@ export default function HomePage() {
         <Hero />
         <GuideTopics />
         <SampleAnswer />
+        <FreeTools />
         <Promises />
       </main>
       <Footer />

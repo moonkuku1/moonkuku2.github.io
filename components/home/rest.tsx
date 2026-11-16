@@ -5,6 +5,25 @@ import { Slider } from "@/components/slider";
 
 export const DISCLAIMER = "풀이는 참고용 해석이며 의료·법률·투자 판단을 대신하지 않습니다.";
 
+/** 무료 풀이 바로가기: 지금은 신살 조회 하나 */
+export function FreeTools() {
+  return (
+    <section aria-labelledby="free-title" className="px-4 pt-8">
+      <h2 id="free-title" className="font-serif text-[21px] font-black">
+        무료로 가볍게
+      </h2>
+      <Link href="/free/sinsal" className="press lift mt-3 flex items-center gap-3 rounded-card border border-gold/30 bg-surface p-4">
+        <span aria-hidden="true" className="text-2xl">🌟</span>
+        <span className="flex-1 text-sm">
+          <b className="block text-gold">내 신살 조회</b>
+          도화·역마·화개·천을귀인과 올해 삼재를 생년월일로 바로 찾아요.
+        </span>
+        <span aria-hidden="true" className="text-gold">›</span>
+      </Link>
+    </section>
+  );
+}
+
 export function SampleAnswer() {
   return (
     <section id="sample" aria-labelledby="sample-title" className="scroll-mt-28 px-4 pt-8">

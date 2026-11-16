@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { BirthFields } from "@/components/birth-fields";
 import { AddButton } from "@/components/cart";
 import { Slider } from "@/components/slider";
 import { FACE } from "@/components/home/face";
@@ -17,8 +18,6 @@ import { track } from "@/lib/track";
  * 첫 화면: 생년월일 입력 하나 → 무료 사주 카드(명식표, 키워드, 삼백이의 오늘 한 마디, 내 사주가 궁금해할 질문 3개).
  * 생년월일은 서버에 저장하지 않는다. 이 탭에서만(sessionStorage) 잠깐 기억하고, 탭을 닫으면 지워진다.
  */
-const field = "min-h-11 w-full rounded-input border border-gold/30 bg-night px-2 text-sm text-text focus:border-gold";
-const seg = (on: boolean) => `press flex-1 rounded-input border text-sm font-medium ${on ? "border-gold bg-gold text-night" : "border-gold/30 text-text-sub"}`;
 
 export function Hero() {
   const [form, setForm] = useState<Form>(EMPTY);
@@ -52,9 +51,6 @@ export function Hero() {
     }
   }, []);
 
-  const [hh, mm] = form.time ? form.time.split(":") : ["", "00"];
-  const setTime = (h: string, m: string) => setForm((f) => ({ ...f, time: h ? `${h}:${m || "00"}` : "" }));
-  const set = <K extends keyof Form>(k: K, v: Form[K]) => setForm((f) => ({ ...f, [k]: v }));
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -106,7 +102,6 @@ export function Hero() {
     setError(null);
   }
 
-  const years = Array.from({ length: maxYear - 1929 }, (_, i) => maxYear - i);
   const summary = `${form.calendar === "lunar" ? `음력${form.leap ? " 윤달" : ""}` : "양력"} ${form.year}.${form.month}.${form.day} · ${form.gender === "male" ? "남" : "여"} · ${form.time ? form.time : "시간 모름"}`;
 
   return (
@@ -140,75 +135,8 @@ export function Hero() {
             </div>
           ) : (
             <form onSubmit={submit} className="mt-4 rounded-card border border-gold/30 bg-surface/95 p-4" noValidate>
-              <div role="group" aria-label="양력 또는 음력" className="flex gap-2">
-                <button type="button" aria-pressed={form.calendar === "solar"} onClick={() => set("calendar", "solar")} className={seg(form.calendar === "solar")}>
-                  양력
-                </button>
-                <button type="button" aria-pressed={form.calendar === "lunar"} onClick={() => set("calendar", "lunar")} className={seg(form.calendar === "lunar")}>
-                  음력
-                </button>
-              </div>
+              <BirthFields form={form} setForm={setForm} maxYear={maxYear} />
 
-              <fieldset className="mt-3">
-                <legend className="mb-1 text-sm text-text-sub">생년월일</legend>
-                <div className="grid grid-cols-[1.3fr_1fr_1fr] gap-2">
-                  <label className="sr-only" htmlFor="by">년</label>
-                  <select id="by" className={field} value={form.year} onChange={(e) => set("year", e.target.value)}>
-                    <option value="">년</option>
-                    {years.map((y) => <option key={y} value={y}>{y}년</option>)}
-                  </select>
-                  <label className="sr-only" htmlFor="bm">월</label>
-                  <select id="bm" className={field} value={form.month} onChange={(e) => set("month", e.target.value)}>
-                    <option value="">월</option>
-                    {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => <option key={m} value={m}>{m}월</option>)}
-                  </select>
-                  <label className="sr-only" htmlFor="bd">일</label>
-                  <select id="bd" className={field} value={form.day} onChange={(e) => set("day", e.target.value)}>
-                    <option value="">일</option>
-                    {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => <option key={d} value={d}>{d}일</option>)}
-                  </select>
-                </div>
-                {form.calendar === "lunar" && (
-                  <label className="mt-2 flex min-h-11 cursor-pointer items-center gap-2 text-sm">
-                    <input type="checkbox" checked={form.leap} onChange={(e) => set("leap", e.target.checked)} className="h-5 w-5 accent-[var(--color-gold)]" />
-                    윤달에 태어났어요
-                  </label>
-                )}
-              </fieldset>
-
-              <fieldset className="mt-3">
-                <legend className="mb-1 text-sm text-text-sub">
-                  태어난 시간 <span className="text-xs">(몰라도 돼요)</span>
-                </legend>
-                <div className={`grid gap-2 ${hh ? "grid-cols-2" : "grid-cols-1"}`}>
-                  <label className="sr-only" htmlFor="bh">시</label>
-                  <select id="bh" className={field} value={hh} onChange={(e) => setTime(e.target.value, mm)}>
-                    <option value="">모름</option>
-                    {Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0")).map((h) => <option key={h} value={h}>{Number(h)}시</option>)}
-                  </select>
-                  {hh && (
-                    <>
-                      <label className="sr-only" htmlFor="bn">분</label>
-                      <select id="bn" className={field} value={mm} onChange={(e) => setTime(hh, e.target.value)}>
-                        {Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0")).map((m) => <option key={m} value={m}>{Number(m)}분</option>)}
-                      </select>
-                    </>
-                  )}
-                </div>
-                <p className="mt-1 text-xs text-text-sub">모르면 &lsquo;모름&rsquo;으로 두세요. 시주 없이 계산하고 확신도를 한 단계 낮춰요.</p>
-              </fieldset>
-
-              <div role="group" aria-label="성별" className="mt-3">
-                <span className="mb-1 block text-sm text-text-sub">성별</span>
-                <div className="grid grid-cols-2 gap-2">
-                  <button type="button" aria-pressed={form.gender === "female"} onClick={() => set("gender", "female")} className={`${seg(form.gender === "female")} h-11`}>
-                    여성
-                  </button>
-                  <button type="button" aria-pressed={form.gender === "male"} onClick={() => set("gender", "male")} className={`${seg(form.gender === "male")} h-11`}>
-                    남성
-                  </button>
-                </div>
-              </div>
               {error && (
                 <p role="alert" className="mt-3 rounded-input border border-seal bg-seal/15 p-3 text-sm">
                   {error}

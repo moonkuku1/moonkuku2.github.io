@@ -14,6 +14,14 @@ export const HOME_SECTIONS = [
   { id: "sample", label: "답변 예시" },
 ];
 
+/** PC 위쪽 메뉴(휴대폰은 아래 메뉴를 쓴다) */
+const TOP_LINKS = [
+  { href: "/", label: "홈" },
+  { href: "/g/assi", label: "삼백 아씨" },
+  { href: "/g/doryeong", label: "삼백 도령" },
+  { href: "/g/haechi", label: "해치 삼백이" },
+  { href: "/free/sinsal", label: "무료 신살" },
+];
 export const SCROLL_KEY = "saju300-home-scroll";
 
 export function Header() {
@@ -34,6 +42,13 @@ export function Header() {
           <img src={`${IMG}/logo/haechi-face.png`} alt="" width={32} height={32} className="h-8 w-8" />
           <span className="font-serif text-lg font-black text-gold">사주300</span>
         </Link>
+        <nav aria-label="위쪽 메뉴" className="hidden items-center gap-1 lg:flex">
+          {TOP_LINKS.map((l) => (
+            <Link key={l.href} href={l.href} className="press flex items-center rounded-pill px-3 text-sm text-text-sub hover:text-gold">
+              {l.label}
+            </Link>
+          ))}
+        </nav>
         <Link
           href="/cart"
           aria-label={`장바구니, 담은 질문 ${ids.length}개`}

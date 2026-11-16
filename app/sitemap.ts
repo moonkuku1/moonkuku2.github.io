@@ -9,6 +9,7 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: `${SITE}/` },
+    { url: `${SITE}/free/sinsal` },
     ...guides.map((g) => ({ url: `${SITE}/g/${g.id}` })),
     ...categories.map((c) => ({ url: `${SITE}/c/${c.code}` })),
     ...LEGAL_DOCS.map((d) => ({ url: `${SITE}/legal/${d.slug}` })),
