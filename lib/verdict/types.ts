@@ -26,6 +26,8 @@ export type Recipe = {
   rule: RuleSpec;
   /** "no-assertion"(단정 금지), "consult:의료|법률|투자"(전문가 상담 권유) */
   safety: string[];
+  /** 좋은 때가 아니라 조심할 때를 찾는 질문이면 true. 이때 뽑힌 시기는 "조심할 때"다 */
+  risk?: boolean;
   source: "specific" | "default";
 };
 
@@ -75,5 +77,8 @@ export type Verdict = {
   signalsFor: SignalHit[];
   signalsAgainst: SignalHit[];
   safety: Safety;
+  /** 뽑힌 시기가 좋은 때가 아니라 조심할 때인 질문(예: 재물을 크게 잃을 수 있는 시기) */
+  risk: boolean;
   reference: { year: number; month: number };
 };
+

@@ -3,8 +3,11 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { AddButton } from "@/components/cart";
+import { Slider } from "@/components/slider";
 import { FACE } from "@/components/home/face";
 import { prefersReducedMotion } from "@/components/use-scroll-spy";
+import { EMPTY_FORM as EMPTY, ME_KEY as KEY, birthBody, type Form } from "@/lib/birth-form";
+import { shareImage } from "@/lib/share-client";
 import type { ProfileCard } from "@/lib/profile-card";
 import { IMG } from "@/lib/questions";
 import { ELEMENT_COLOR } from "@/lib/result";
@@ -14,25 +17,6 @@ import { track } from "@/lib/track";
  * 첫 화면: 생년월일 입력 하나 → 무료 사주 카드(명식표, 키워드, 삼백이의 오늘 한 마디, 내 사주가 궁금해할 질문 3개).
  * 생년월일은 서버에 저장하지 않는다. 이 탭에서만(sessionStorage) 잠깐 기억하고, 탭을 닫으면 지워진다.
  */
-type Form = { calendar: "solar" | "lunar"; year: string; month: string; day: string; leap: boolean; time: string; gender: "" | "male" | "female" };
-const EMPTY: Form = { calendar: "solar", year: "", month: "", day: "", leap: false, time: "", gender: "" };
-const KEY = "saju300-me";
-
-/** 서버에 보내는 값(요청 본문으로만 보내고 주소에는 넣지 않는다) */
-function birthBody(form: Form) {
-  const [hh, mm] = form.time ? form.time.split(":").map(Number) : [null, 0];
-  return {
-    calendar: form.calendar,
-    year: Number(form.year),
-    month: Number(form.month),
-    day: Number(form.day),
-    leap: form.calendar === "lunar" ? form.leap : undefined,
-    hour: hh,
-    minute: mm,
-    gender: form.gender,
-  };
-}
-
 const field = "min-h-11 w-full rounded-input border border-gold/30 bg-night px-2 text-sm text-text focus:border-gold";
 const seg = (on: boolean) => `press flex-1 rounded-input border text-sm font-medium ${on ? "border-gold bg-gold text-night" : "border-gold/30 text-text-sub"}`;
 
@@ -68,6 +52,8 @@ export function Hero() {
     }
   }, []);
 
+  const [hh, mm] = form.time ? form.time.split(":") : ["", "00"];
+  const setTime = (h: string, m: string) => setForm((f) => ({ ...f, time: h ? `${h}:${m || "00"}` : "" }));
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setForm((f) => ({ ...f, [k]: v }));
 
   async function submit(e: React.FormEvent) {
@@ -104,30 +90,14 @@ export function Hero() {
     setShareError(null);
     setSharing(true);
     try {
-      const res = await fetch("/api/share/card", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(birthBody(form)) });
-      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error ?? "이미지를 만들지 못했어요.");
-      const blob = await res.blob();
-      const file = new File([blob], "saju300-내사주카드.png", { type: "image/png" });
       track("share_card");
-      // 휴대폰에서는 공유 창을 열고, 안 되면 이미지를 내려받는다
-      if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: "내 사주 카드" });
-      } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = file.name;
-        a.click();
-        setTimeout(() => URL.revokeObjectURL(url), 5000);
-      }
+      await shareImage("/api/share/card", birthBody(form), "saju300-내사주카드.png", "내 사주 카드");
     } catch (err) {
-      if ((err as DOMException).name === "AbortError") return; // 공유 창을 닫은 경우
       setShareError((err as Error).message);
     } finally {
       setSharing(false);
     }
   }
-
   function forget() {
     sessionStorage.removeItem(KEY);
     setCard(null);
@@ -141,19 +111,20 @@ export function Hero() {
 
   return (
     <section id="me" aria-labelledby="hero-title" className="scroll-mt-28">
-      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-8 lg:px-4 lg:pt-6">
-        {/* 그림: 휴대폰은 위쪽, PC는 오른쪽 */}
-        <div className="relative h-[250px] overflow-hidden lg:order-2 lg:h-[440px] lg:self-center lg:rounded-card lg:border lg:border-gold/30">
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_460px] lg:gap-6 lg:px-4 lg:pt-6">
+        {/* 그림: 휴대폰은 위쪽, PC는 오른쪽. PC에서는 왼쪽 열과 같은 높이로 늘리고 가장자리를 배경색으로 번지게 한다 */}
+        <div className="relative h-[250px] overflow-hidden lg:order-2 lg:h-auto lg:min-h-[440px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`${IMG}/banners/banner-3-haechi.jpg`}
             alt="작은 상 위 종이에 붉은 도장을 찍는 해치 삼백이"
             className="kenburns motion absolute inset-0 h-full w-full object-cover object-top"
           />
-          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-night to-transparent lg:hidden" />
+          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-night to-transparent" />
+          <div aria-hidden="true" className="absolute inset-y-0 left-0 hidden w-28 bg-gradient-to-r from-night to-transparent lg:block" />
+          <div aria-hidden="true" className="absolute inset-x-0 top-0 hidden h-16 bg-gradient-to-b from-night to-transparent lg:block" />
         </div>
-
-        <div className="relative -mt-14 px-4 lg:order-1 lg:mt-0 lg:self-center lg:px-0">
+        <div className="relative -mt-14 px-4 lg:order-1 lg:mt-0 lg:px-0">
           <p className="text-xs font-bold text-gold">하나에 300원 · 결론부터</p>
           <h1 id="hero-title" className="mt-1 font-serif text-[28px] font-black leading-tight lg:text-[34px]">
             내 사주, 결론부터
@@ -207,25 +178,36 @@ export function Hero() {
                 )}
               </fieldset>
 
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                <div>
-                  <label htmlFor="bt" className="mb-1 block text-sm text-text-sub">태어난 시간</label>
-                  <input id="bt" type="time" className={field} value={form.time} onChange={(e) => set("time", e.target.value)} />
+              <fieldset className="mt-3">
+                <legend className="mb-1 text-sm text-text-sub">
+                  태어난 시간 <span className="text-xs">(몰라도 돼요)</span>
+                </legend>
+                <div className="grid grid-cols-2 gap-2">
+                  <label className="sr-only" htmlFor="bh">시</label>
+                  <select id="bh" className={field} value={hh} onChange={(e) => setTime(e.target.value, mm)}>
+                    <option value="">모름</option>
+                    {Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0")).map((h) => <option key={h} value={h}>{Number(h)}시</option>)}
+                  </select>
+                  <label className="sr-only" htmlFor="bn">분</label>
+                  <select id="bn" className={`${field} disabled:opacity-40`} value={hh ? mm : ""} disabled={!hh} onChange={(e) => setTime(hh, e.target.value)}>
+                    {!hh && <option value="">모름</option>}
+                    {Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0")).map((m) => <option key={m} value={m}>{Number(m)}분</option>)}
+                  </select>
                 </div>
-                <div role="group" aria-label="성별">
-                  <span className="mb-1 block text-sm text-text-sub">성별</span>
-                  <div className="flex gap-2">
-                    <button type="button" aria-pressed={form.gender === "female"} onClick={() => set("gender", "female")} className={`${seg(form.gender === "female")} min-h-11`}>
-                      여성
-                    </button>
-                    <button type="button" aria-pressed={form.gender === "male"} onClick={() => set("gender", "male")} className={`${seg(form.gender === "male")} min-h-11`}>
-                      남성
-                    </button>
-                  </div>
+                <p className="mt-1 text-xs text-text-sub">모르면 &lsquo;모름&rsquo;으로 두세요. 시주 없이 계산하고 확신도를 한 단계 낮춰요.</p>
+              </fieldset>
+
+              <div role="group" aria-label="성별" className="mt-3">
+                <span className="mb-1 block text-sm text-text-sub">성별</span>
+                <div className="grid grid-cols-2 gap-2">
+                  <button type="button" aria-pressed={form.gender === "female"} onClick={() => set("gender", "female")} className={`${seg(form.gender === "female")} h-11`}>
+                    여성
+                  </button>
+                  <button type="button" aria-pressed={form.gender === "male"} onClick={() => set("gender", "male")} className={`${seg(form.gender === "male")} h-11`}>
+                    남성
+                  </button>
                 </div>
               </div>
-              <p className="mt-1 text-xs text-text-sub">시간을 모르면 비워 두세요. 시주 없이 계산하고 확신도를 한 단계 낮춰요.</p>
-
               {error && (
                 <p role="alert" className="mt-3 rounded-input border border-seal bg-seal/15 p-3 text-sm">
                   {error}
@@ -241,7 +223,7 @@ export function Hero() {
       </div>
 
       {card && (
-        <div ref={resultRef} tabIndex={-1} className="scroll-mt-28 px-4 pt-6 outline-none">
+        <div ref={resultRef} tabIndex={-1} className="scroll-mt-28 pt-6 outline-none lg:px-4">
           <ProfileResult card={card} sample={sample} onReset={forget} onSave={saveImage} saving={sharing} saveError={shareError} />
         </div>
       )}
@@ -253,9 +235,9 @@ const ELEMENT_KO = { wood: "목", fire: "화", earth: "토", metal: "금", water
 
 function ProfileResult({ card, sample, onReset, onSave, saving, saveError }: { card: ProfileCard; sample: boolean; onReset: () => void; onSave: () => void; saving: boolean; saveError: string | null }) {
   return (
-    <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
-      {/* 내 사주 카드 */}
-      <section aria-labelledby="my-card" className="rounded-card border border-gold/30 bg-surface p-4">
+    <Slider label="내 사주 결과" desktop="lg:grid lg:grid-cols-3 lg:items-start lg:gap-4" items={[
+      /* 내 사주 카드 */
+      <section key="card" aria-labelledby="my-card" className="h-full rounded-card border border-gold/30 bg-surface p-4">
         <div className="flex items-start justify-between gap-2">
           <div>
             <h2 id="my-card" className="font-serif text-[21px] font-black">
@@ -315,11 +297,9 @@ function ProfileResult({ card, sample, onReset, onSave, saving, saveError }: { c
             {n}
           </p>
         ))}
-      </section>
-
-      <div className="space-y-4">
-        {/* 삼백이의 오늘 한 마디 */}
-        <section aria-labelledby="today-title" className="hanji relative rounded-card p-6">
+      </section>,
+        /* 삼백이의 오늘 한 마디 */
+        <section key="today" aria-labelledby="today-title" className="hanji relative h-full rounded-card p-6">
           <h2 id="today-title" className="text-xs font-bold text-seal">
             삼백이의 오늘 한 마디
           </h2>
@@ -328,10 +308,9 @@ function ProfileResult({ card, sample, onReset, onSave, saving, saveError }: { c
           <span aria-hidden="true" className="stamp-anim absolute right-5 top-5 flex h-14 w-14 items-center justify-center border-2 border-seal font-serif text-xl font-black text-seal">
             今日
           </span>
-        </section>
-
-        {/* 내 사주가 궁금해할 질문 3개 */}
-        <section aria-labelledby="rec-title" className="rounded-card border border-gold/30 bg-surface p-4">
+        </section>,
+        /* 내 사주가 궁금해할 질문 3개 */
+        <section key="rec" aria-labelledby="rec-title" className="h-full rounded-card border border-gold/30 bg-surface p-4">
           <h2 id="rec-title" className="font-serif text-[21px] font-black">
             내 사주가 궁금해할 질문 3개
           </h2>
@@ -349,11 +328,11 @@ function ProfileResult({ card, sample, onReset, onSave, saving, saveError }: { c
               </li>
             ))}
           </ul>
-        </section>
-      </div>
-    </div>
+        </section>,
+    ]} />
   );
 }
+
 
 
 

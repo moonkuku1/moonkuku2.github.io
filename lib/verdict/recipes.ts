@@ -30,6 +30,9 @@ function checkSignals(where: string, list: SignalRef[]) {
   }
 }
 
+/** 좋은 때가 아니라 조심할 때를 묻는 질문 제목 */
+export const RISK_TITLE = /(조심해야 할|틀어질 수 있는|흔들리기 쉬운|갈등이 생기기|잃을 수 있는)/;
+
 const ids = new Set(QUESTIONS.map((q) => q.id));
 for (const [id, r] of Object.entries(specific)) {
   if (id.startsWith("_")) continue;
@@ -58,14 +61,18 @@ export function resolveRecipe(questionId: string): { recipe: Recipe; question: Q
   const signals = defaults.signalsByCategory[useYear ? "Y" : code];
   if (!signals && rule.kind !== "needs-partner") throw new Error(`공통 레시피에 카테고리 ${code} 신호가 없어요`);
 
+  // "조심해야 할 시기", "틀어질 수 있는 시기"처럼 나쁜 때를 찾는 질문은 신호의 방향을 뒤집어 위험한 때를 뽑는다
+  const risk = RISK_TITLE.test(question.title) && (rule.kind === "timing-month" || rule.kind === "timing-year");
+  const flip = (list: SignalRef[]) => list.map((s) => ({ ...s, dir: s.dir === "+" ? ("-" as const) : ("+" as const) }));
   return {
     question,
     recipe: {
-      id: `default:${code}:${question.answerFormat}`,
+      id: `default:${code}:${question.answerFormat}${risk ? ":risk" : ""}`,
       verdictType: question.answerFormat,
-      signals: signals ?? [],
+      signals: risk ? flip(signals ?? []) : (signals ?? []),
       rule,
       safety: [],
+      risk,
       source: "default",
     },
   };
@@ -73,3 +80,4 @@ export function resolveRecipe(questionId: string): { recipe: Recipe; question: Q
 
 /** 모든 질문이 레시피를 갖는지 확인할 때 쓴다 */
 export const ALL_QUESTION_IDS = QUESTIONS.map((q) => q.id);
+

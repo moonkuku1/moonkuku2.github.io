@@ -36,12 +36,8 @@ const NOTE_TEXT: Record<Chart["notes"][number], string> = {
   "term-boundary": "태어난 날에 절기가 바뀌어서, 태어난 시간을 알면 연주나 월주가 달라질 수 있어요.",
 };
 
-export function buildProfileCard(
-  chart: Chart,
-  profile: Profile,
-  now: { year: number; month: number; day: number },
-  sajuYear: number,
-): ProfileCard {
+/** 명식표에 쓰는 기둥들(사주 글자와 오행 색) */
+export function pillarsOf(chart: Chart): CardPillar[] {
   const p = chart.pillars;
   const list = [
     { label: "연주" as const, pillar: p.year, pos: "연" },
@@ -49,7 +45,7 @@ export function buildProfileCard(
     { label: "일주" as const, pillar: p.day, pos: "일" },
     ...(p.hour ? [{ label: "시주" as const, pillar: p.hour, pos: "시" }] : []),
   ];
-  const pillars: CardPillar[] = list.map(({ label, pillar, pos }) => {
+  return list.map(({ label, pillar, pos }) => {
     const c = chart.elements.characters.find((x) => x.position === pos)!;
     return {
       label,
@@ -58,6 +54,16 @@ export function buildProfileCard(
       branch: { ch: pillar.hanja[1], element: EL[c.branch.element], label: c.branch.elementName },
     };
   });
+}
+
+export function buildProfileCard(
+  chart: Chart,
+  profile: Profile,
+  now: { year: number; month: number; day: number },
+  sajuYear: number,
+): ProfileCard {
+  const p = chart.pillars;
+  const pillars = pillarsOf(chart);
 
   return {
     pillars,
@@ -75,3 +81,4 @@ export function buildProfileCard(
     timeUnknown: chart.lowerConfidence,
   };
 }
+

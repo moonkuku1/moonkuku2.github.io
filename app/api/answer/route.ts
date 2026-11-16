@@ -1,7 +1,7 @@
-import { z } from "zod";
-import { clientIp, jsonResponse as json, kstToday, makeLimiter } from "../../../lib/http";
+import { clientIp, jsonResponse as json, makeLimiter } from "../../../lib/http";
 import { loadLlmConfig } from "../../../lib/llm/config";
-import { AnswerGenerationError, answerQuestion } from "../../../lib/llm/run";
+import { AnswerGenerationError } from "../../../lib/llm/run";
+import { AnswerBody, makeResult } from "../../../lib/result-service";
 
 /**
  * 질문 답변 API: 계산 → 캐시 확인 → 판정 → AI 문장 → 검수 → 저장 (docs/business-plan.md 7장).
@@ -12,20 +12,6 @@ import { AnswerGenerationError, answerQuestion } from "../../../lib/llm/run";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const Body = z.object({
-  calendar: z.enum(["solar", "lunar"]),
-  year: z.number().int().min(1900).max(2100),
-  month: z.number().int().min(1).max(12),
-  day: z.number().int().min(1).max(31),
-  leap: z.boolean().optional(),
-  hour: z.number().int().min(0).max(23).nullable(),
-  minute: z.number().int().min(0).max(59).optional(),
-  gender: z.enum(["male", "female"]),
-  questionId: z.string().regex(/^[A-Z]\d{2}$/),
-  name: z.string().max(20).optional(),
-  options: z.object({ lateZiSameDay: z.boolean().optional(), clockMode: z.enum(["dst-only", "utc9"]).optional() }).optional(),
-});
-
 const limited = makeLimiter(20);
 
 export async function POST(req: Request) {
@@ -33,7 +19,7 @@ export async function POST(req: Request) {
 
   let parsed;
   try {
-    parsed = Body.safeParse(await req.json());
+    parsed = AnswerBody.safeParse(await req.json());
   } catch {
     return json({ error: "요청 형식이 맞지 않아요." }, 400);
   }
@@ -52,35 +38,9 @@ export async function POST(req: Request) {
   }
 
   try {
-    const out = await answerQuestion(
-      {
-        chartInput: {
-          calendar: b.calendar,
-          year: b.year,
-          month: b.month,
-          day: b.day,
-          leap: b.leap,
-          hour: b.hour,
-          minute: b.minute,
-          gender: b.gender,
-          options: b.options,
-        },
-        questionId: b.questionId,
-        reference: { year: kstToday().year, month: kstToday().month },
-        userName: b.name,
-      },
-      { config },
-    );
+    const out = await makeResult(b, { config });
     if (out.status === "needs-partner") return json({ status: "needs-partner", message: "궁합은 두 사람의 정보가 필요해요." });
-    return json({
-      status: "ok",
-      sample: out.meta.source === "sample",
-      guide: out.guide,
-      answer: out.answer,
-      verdict: out.verdict,
-      profile: out.profile,
-      meta: out.meta,
-    });
+    return json(out);
   } catch (e) {
     if (e instanceof AnswerGenerationError) return json({ error: e.message, refund: true }, 502);
     const msg = (e as Error).message ?? "";
@@ -90,4 +50,5 @@ export async function POST(req: Request) {
     return json({ error: "답변을 만드는 중 문제가 생겼어요." }, 500);
   }
 }
+
 

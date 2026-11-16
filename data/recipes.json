@@ -122,6 +122,7 @@
     "safety": ["no-assertion"]
   },
   "W10": {
+    "risk": true,
     "verdictType": "시기(연)",
     "timingScope": "앞으로 7년",
     "signals": [
@@ -256,3 +257,4 @@
     "safety": []
   }
 }
+

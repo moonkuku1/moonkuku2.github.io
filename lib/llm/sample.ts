@@ -95,12 +95,20 @@ export function sampleHeadline(v: Verdict, g: GuideId): string {
   switch (val.kind) {
     case "timing-month": {
       const ms = uniq(val.picks, mm).map(mm);
+      if (v.risk) {
+        const both = ms.length === 1 ? ms[0] : `${ms[0]}과 ${ms[1]}`;
+        return t(g, [`${both}은 조심하세요.`, `${both}은 조심하시지요.`, `${both}은 조심하여라.`]);
+      }
       return ms.length === 1
         ? t(g, [`${ms[0]}이 가장 유력해요.`, `${ms[0]}이 가장 유력합니다.`, `${ms[0]}이 으뜸이다.`])
         : t(g, [`${ms[0]}과 ${ms[1]}이 가장 유력해요.`, `${ms[0]}과 ${ms[1]}이 가장 유력합니다.`, `${ms[0]}이 으뜸이다. ${ms[1]}이 뒤를 잇는다.`]);
     }
     case "timing-year": {
       const ys = uniq(val.picks, yy).map(yy);
+      if (v.risk) {
+        const both = ys.length === 1 ? ys[0] : `${ys[0]}과 ${ys[1]}`;
+        return t(g, [`${both}은 조심하세요.`, `${both}은 조심하시지요.`, `${both}은 조심하여라.`]);
+      }
       return ys.length === 1
         ? t(g, [`${ys[0]}이 가장 유력해요.`, `${ys[0]}이 가장 유력합니다.`, `${ys[0]}이 으뜸이다.`])
         : t(g, [`${ys[0]}과 ${ys[1]}이 가장 유력해요.`, `${ys[0]}과 ${ys[1]}이 가장 유력합니다.`, `${ys[0]}이 으뜸이다. ${ys[1]}이 뒤를 잇는다.`]);
@@ -186,16 +194,23 @@ const FILLERS: Tri[] = [
 
 function verdictSentence(v: Verdict, g: GuideId): string {
   const val = v.value;
-  const when = (a: string, b: string) => t(g, [`${a}에 힘이 가장 몰려 있고, ${b}이 그 뒤를 이어요.`, `${a}에 힘이 가장 몰려 있고, ${b}이 그 뒤를 잇습니다.`, `${a}에 힘이 가장 몰려 있고, ${b}이 그 뒤를 잇느니라.`]);
+  const when = (a: string, b: string) =>
+    v.risk
+      ? t(g, [`${a}에 부딪히는 기운이 가장 몰려 있고, ${b}이 그 뒤를 이어요.`, `${a}에 부딪히는 기운이 가장 몰려 있고, ${b}이 그 뒤를 잇습니다.`, `${a}에 부딪히는 기운이 가장 몰려 있고, ${b}이 그 뒤를 잇느니라.`])
+      : t(g, [`${a}에 힘이 가장 몰려 있고, ${b}이 그 뒤를 이어요.`, `${a}에 힘이 가장 몰려 있고, ${b}이 그 뒤를 잇습니다.`, `${a}에 힘이 가장 몰려 있고, ${b}이 그 뒤를 잇느니라.`]);
+  const single = (a: string) =>
+    v.risk
+      ? t(g, [`${a}에 부딪히는 기운이 몰려 있어요.`, `${a}에 부딪히는 기운이 몰려 있습니다.`, `${a}에 부딪히는 기운이 몰려 있느니라.`])
+      : t(g, [`${a}에 힘이 가장 몰려 있어요.`, `${a}에 힘이 가장 몰려 있습니다.`, `${a}에 힘이 가장 몰려 있느니라.`]);
   switch (val.kind) {
     case "timing-month":
     case "yesno+timing-month": {
       const ms = uniq(val.picks, mm).map(mm);
-      return ms.length > 1 ? when(ms[0], ms[1]) : t(g, [`${ms[0]}에 힘이 가장 몰려 있어요.`, `${ms[0]}에 힘이 가장 몰려 있습니다.`, `${ms[0]}에 힘이 가장 몰려 있느니라.`]);
+      return ms.length > 1 ? when(ms[0], ms[1]) : single(ms[0]);
     }
     case "timing-year": {
       const ys = uniq(val.picks, yy).map(yy);
-      return ys.length > 1 ? when(ys[0], ys[1]) : t(g, [`${ys[0]}에 힘이 가장 몰려 있어요.`, `${ys[0]}에 힘이 가장 몰려 있습니다.`, `${ys[0]}에 힘이 가장 몰려 있느니라.`]);
+      return ys.length > 1 ? when(ys[0], ys[1]) : single(ys[0]);
     }
     case "best-worst-month":
     case "monthly-graph":
@@ -294,4 +309,5 @@ export function sampleAnswer(args: {
   void categoryNameOf;
   return answer;
 }
+
 

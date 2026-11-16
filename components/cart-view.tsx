@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { AddButton, useCart } from "@/components/cart";
 import { FACE } from "@/components/home/face";
 import { DISCLAIMER } from "@/components/home/rest";
+import { savedForm } from "@/lib/birth-form";
 import { bundleInfo, priceOfCategory } from "@/lib/pricing";
 import { track } from "@/lib/track";
 import { IMG, categories, getCategory, getQuestion, guideOf, questionsOf, type Question } from "@/lib/questions";
@@ -16,6 +17,10 @@ export function CartView() {
   const [agreeRefund, setAgreeRefund] = useState(false);
   const [agreeAdult, setAgreeAdult] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  // 시험용 결제(실제 결제 아님). 환경변수 NEXT_PUBLIC_TEST_PAY=on 으로 시험하는 사람에게만 연다.
+  const testPay = process.env.NEXT_PUBLIC_TEST_PAY === "on";
+  const [paid, setPaid] = useState<string[] | null>(null);
+  const [hasBirth, setHasBirth] = useState(true);
   const [ready, setReady] = useState(false);
 
   // 저장된 장바구니를 읽은 뒤에 보여 준다(빈 화면이 잠깐 번쩍이는 것을 막는다).
@@ -242,12 +247,39 @@ export function CartView() {
         <button
           type="button"
           disabled={!canPay}
-          onClick={() => setNotice("지금은 테스트 단계라 실제 결제는 되지 않아요. 결제 연결은 준비 중이에요.")}
+          onClick={() => {
+            if (!testPay) return setNotice("지금은 테스트 단계라 실제 결제는 되지 않아요. 결제 연결은 준비 중이에요.");
+            setHasBirth(!!savedForm());
+            setPaid(ids);
+          }}
           className="press mt-3 w-full rounded-pill bg-cta py-3 font-bold text-night disabled:opacity-40"
         >
-          <span className="price">{total.toLocaleString()}원 결제하고 바로 보기</span>
+          <span className="price">{testPay ? `${total.toLocaleString()}원 시험 결제(실제 결제 아님)` : `${total.toLocaleString()}원 결제하고 바로 보기`}</span>
         </button>
         {!canPay && <p className="mt-2 text-xs text-text-sub">두 가지를 모두 확인하면 결제 버튼이 켜져요.</p>}
+        {paid && (
+          <div className="mt-3 rounded-card border border-gold/40 bg-surface p-4">
+            <p className="text-sm text-text-sub">시험 결제예요. 실제로 돈이 나가지 않아요. 아래에서 풀이를 열어 보세요.</p>
+            {!hasBirth && (
+              <p role="alert" className="mt-2 rounded-input border border-seal bg-seal/15 p-2 text-sm">
+                생년월일을 먼저 알려 주세요. <Link href="/#me" className="underline">홈에서 입력하기</Link>
+              </p>
+            )}
+            <ul className="mt-2 divide-y divide-gold/15">
+              {paid.map((id) => {
+                const q = getQuestion(id);
+                return q ? (
+                  <li key={id} className="flex items-center gap-2 py-2">
+                    <p className="flex-1 text-sm leading-snug">{q.title}</p>
+                    <Link href={`/r/t-${id}`} className="press flex shrink-0 items-center rounded-pill bg-gold px-4 text-sm font-bold text-night">
+                      풀이 보기
+                    </Link>
+                  </li>
+                ) : null;
+              })}
+            </ul>
+          </div>
+        )}
         {notice && (
           <p role="status" className="mt-3 rounded-input border border-gold/40 bg-surface-2 p-3 text-sm">
             {notice}
@@ -259,6 +291,7 @@ export function CartView() {
     </div>
   );
 }
+
 
 
 

@@ -10,9 +10,8 @@ import { IMG } from "@/lib/questions";
 
 export const HOME_SECTIONS = [
   { id: "me", label: "내 사주" },
-  { id: "categories", label: "주제별" },
+  { id: "categories", label: "풀이꾼·주제" },
   { id: "sample", label: "답변 예시" },
-  { id: "guides", label: "풀이꾼" },
 ];
 
 export const SCROLL_KEY = "saju300-home-scroll";

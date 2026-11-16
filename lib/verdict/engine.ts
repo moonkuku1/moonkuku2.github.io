@@ -318,8 +318,10 @@ export function judge(chart: Chart, questionId: string, ref: Reference): Verdict
     signalsFor: forHits,
     signalsAgainst: againstHits,
     safety: safetyOf(question, recipe),
+    risk: !!recipe.risk,
     reference: ref,
   };
 }
+
 
 

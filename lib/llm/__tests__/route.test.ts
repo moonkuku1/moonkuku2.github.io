@@ -22,7 +22,11 @@ describe("POST /api/answer", () => {
     expect(j.sample).toBe(true);
     expect(j.guide).toBe("assi");
     expect(j.answer.headline).toMatch(/월/);
-    expect(j.verdict.signalsFor.length).toBeGreaterThan(0);
+    expect(j.answer.evidence.length).toBeGreaterThan(0);
+    expect(j.pillars).toHaveLength(4);
+    expect(j.next).toHaveLength(3);
+    expect(j.flow).toHaveLength(12);
+    expect(["good", "careful"]).toContain(j.tone);
     expect(JSON.stringify(j)).not.toContain("2000-01-01");
   });
   it("AI 키가 있는데 결제 확인이 안 돼 있으면(PAYMENT_MODE가 test가 아니면) 402", async () => {
@@ -69,3 +73,4 @@ describe("POST /api/answer", () => {
     expect(j.answer.confidenceNote).toContain("출생 시간");
   });
 });
+
