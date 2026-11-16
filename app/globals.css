@@ -38,12 +38,18 @@
 html {
   scroll-behavior: smooth;
   background-color: var(--color-night);
-  background-image: url("/images/saju300-images/textures/tex-night.jpg");
-  background-size: 540px;
+  /* 위쪽 달빛과 푸른 안개를 옅게 깔고, 그 아래에 비단 질감을 반복한다 */
+  background-image:
+    radial-gradient(60% 420px at 85% 0%, rgba(217, 180, 106, 0.1), transparent 70%),
+    radial-gradient(70% 520px at 10% 0%, rgba(22, 50, 74, 0.55), transparent 75%),
+    url("/images/saju300-images/textures/tex-night.jpg");
+  background-size: 100% 100%, 100% 100%, 540px;
+  background-repeat: no-repeat, no-repeat, repeat;
   color: var(--color-text);
 }
 
 body {
+  overflow-x: clip;
   font-family: var(--font-sans);
   font-size: 15px;
   line-height: 1.6;
@@ -63,6 +69,7 @@ body {
 @media (min-width: 1024px) {
   .app-shell-wide {
     max-width: 1200px;
+    background-color: transparent;
   }
 }
 
@@ -197,3 +204,11 @@ body {
 }
 
 
+
+/* PC 첫 화면 그림: 가장자리를 마스크로 투명하게 녹여 배경과 이어 붙인다 */
+@media (min-width: 1024px) {
+  .hero-fade {
+    -webkit-mask-image: radial-gradient(ellipse 50% 60% at 50% 46%, #000 55%, transparent 100%);
+    mask-image: radial-gradient(ellipse 50% 60% at 50% 46%, #000 55%, transparent 100%);
+  }
+}

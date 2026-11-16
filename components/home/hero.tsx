@@ -111,20 +111,18 @@ export function Hero() {
 
   return (
     <section id="me" aria-labelledby="hero-title" className="scroll-mt-28">
-      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_460px] lg:gap-6 lg:px-4 lg:pt-6">
-        {/* 그림: 휴대폰은 위쪽, PC는 오른쪽. PC에서는 왼쪽 열과 같은 높이로 늘리고 가장자리를 배경색으로 번지게 한다 */}
-        <div className="relative h-[250px] overflow-hidden lg:order-2 lg:h-auto lg:min-h-[440px]">
+      <div className="lg:relative lg:isolate lg:min-h-[560px] lg:px-4 lg:py-8">
+        {/* 그림: 휴대폰은 위쪽 그림, PC는 화면 가득한 배경(글은 왼쪽 어두운 쪽에 놓는다) */}
+        <div className="relative h-[250px] overflow-hidden lg:absolute lg:inset-y-0 lg:left-1/2 lg:-z-10 lg:h-auto lg:w-screen lg:-translate-x-1/2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`${IMG}/banners/banner-3-haechi.jpg`}
             alt="작은 상 위 종이에 붉은 도장을 찍는 해치 삼백이"
-            className="kenburns motion absolute inset-0 h-full w-full object-cover object-top"
+            className="kenburns motion hero-fade absolute inset-0 h-full w-full object-cover object-top lg:inset-y-0 lg:left-auto lg:right-[max(0px,calc(50vw-600px))] lg:w-[620px] lg:object-[50%_20%]"
           />
-          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-night to-transparent" />
-          <div aria-hidden="true" className="absolute inset-y-0 left-0 hidden w-28 bg-gradient-to-r from-night to-transparent lg:block" />
-          <div aria-hidden="true" className="absolute inset-x-0 top-0 hidden h-16 bg-gradient-to-b from-night to-transparent lg:block" />
+          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-night to-transparent lg:hidden" />
         </div>
-        <div className="relative -mt-14 px-4 lg:order-1 lg:mt-0 lg:px-0">
+        <div className="relative -mt-14 px-4 lg:mt-0 lg:max-w-[540px] lg:px-0">
           <p className="text-xs font-bold text-gold">하나에 300원 · 결론부터</p>
           <h1 id="hero-title" className="mt-1 font-serif text-[28px] font-black leading-tight lg:text-[34px]">
             내 사주, 결론부터
@@ -182,17 +180,20 @@ export function Hero() {
                 <legend className="mb-1 text-sm text-text-sub">
                   태어난 시간 <span className="text-xs">(몰라도 돼요)</span>
                 </legend>
-                <div className="grid grid-cols-2 gap-2">
+                <div className={`grid gap-2 ${hh ? "grid-cols-2" : "grid-cols-1"}`}>
                   <label className="sr-only" htmlFor="bh">시</label>
                   <select id="bh" className={field} value={hh} onChange={(e) => setTime(e.target.value, mm)}>
                     <option value="">모름</option>
                     {Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0")).map((h) => <option key={h} value={h}>{Number(h)}시</option>)}
                   </select>
-                  <label className="sr-only" htmlFor="bn">분</label>
-                  <select id="bn" className={`${field} disabled:opacity-40`} value={hh ? mm : ""} disabled={!hh} onChange={(e) => setTime(hh, e.target.value)}>
-                    {!hh && <option value="">모름</option>}
-                    {Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0")).map((m) => <option key={m} value={m}>{Number(m)}분</option>)}
-                  </select>
+                  {hh && (
+                    <>
+                      <label className="sr-only" htmlFor="bn">분</label>
+                      <select id="bn" className={field} value={mm} onChange={(e) => setTime(hh, e.target.value)}>
+                        {Array.from({ length: 60 }, (_, i) => String(i).padStart(2, "0")).map((m) => <option key={m} value={m}>{Number(m)}분</option>)}
+                      </select>
+                    </>
+                  )}
                 </div>
                 <p className="mt-1 text-xs text-text-sub">모르면 &lsquo;모름&rsquo;으로 두세요. 시주 없이 계산하고 확신도를 한 단계 낮춰요.</p>
               </fieldset>
