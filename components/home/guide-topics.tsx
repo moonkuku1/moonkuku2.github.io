@@ -30,7 +30,7 @@ export function GuideTopics() {
         className="press lift relative block aspect-[3/4] w-full overflow-hidden rounded-card border border-gold/30"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={`${IMG}/banners/${BANNER[g.id]}`} alt="" className="kenburns motion absolute inset-0 h-full w-full object-cover object-top" />
+        <img src={`${IMG}/${BANNER[g.id]}`} alt="" className="kenburns motion absolute inset-0 h-full w-full object-cover object-top" />
         <span className="absolute inset-x-0 bottom-0 flex h-[44%] flex-col justify-end bg-gradient-to-t from-night via-night/85 to-transparent p-4">
           <span className="text-xs font-bold text-gold">{g.scope}</span>
           <span className="font-serif text-2xl font-black leading-tight">{g.name}</span>

@@ -1,8 +1,8 @@
 import type { Guide } from "./questions";
 
-/** 풀이꾼별 큰 그림(3:4 배너) 파일 이름 */
+/** 풀이꾼 카드 그림(홈 풀이꾼 카드, 풀이꾼 페이지). public/images/saju300-images 아래 경로 */
 export const BANNER: Record<Guide, string> = {
-  assi: "banner-1-assi.jpg",
-  doryeong: "banner-2-doryeong.jpg",
-  haechi: "banner-3-haechi.jpg",
+  assi: "guide-cards/assi.webp",
+  doryeong: "guide-cards/doryeong.webp",
+  haechi: "guide-cards/haechi.webp",
 };

@@ -107,16 +107,18 @@ export function Hero() {
   return (
     <section id="me" aria-labelledby="hero-title" className="scroll-mt-28">
       <div className="lg:relative lg:isolate lg:min-h-[560px] lg:px-4 lg:py-8">
-        {/* 그림: 휴대폰은 위쪽 그림, PC는 화면 가득한 배경(글은 왼쪽 어두운 쪽에 놓는다) */}
+        {/* 배경 그림: 휴대폰은 위쪽 그림, PC는 화면 가득한 배경(글은 왼쪽 어두운 쪽에 놓는다) */}
         <div className="relative h-[250px] overflow-hidden lg:absolute lg:inset-y-0 lg:left-1/2 lg:-z-10 lg:h-auto lg:w-screen lg:-translate-x-1/2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`${IMG}/banners/banner-3-haechi.jpg`}
-            alt="작은 상 위 종이에 붉은 도장을 찍는 해치 삼백이"
-            className="kenburns motion hero-fade absolute inset-0 h-full w-full object-cover object-top lg:inset-y-0 lg:left-auto lg:right-[max(0px,calc(50vw-600px))] lg:w-[620px] lg:object-[50%_20%]"
+            src={`${IMG}/backgrounds/moonlit-canyon.webp`}
+            alt=""
+            aria-hidden="true"
+            className="kenburns motion absolute inset-0 h-full w-full object-cover object-[78%_50%] lg:object-center"
           />
-          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-night to-transparent lg:hidden" />
+          <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-night to-transparent lg:h-40" />
         </div>
+
         <div className="relative -mt-14 px-4 lg:mt-0 lg:max-w-[540px] lg:px-0">
           <p className="text-xs font-bold text-gold">하나에 300원 · 결론부터</p>
           <h1 id="hero-title" className="mt-1 font-serif text-[28px] font-black leading-tight lg:text-[34px]">

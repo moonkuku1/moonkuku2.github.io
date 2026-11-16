@@ -39,7 +39,7 @@ export default async function GuidePage({ params }: Props) {
         {/* 풀이꾼 장면 */}
         <section aria-label={`${g.name} 소개`} className="relative h-[340px] overflow-hidden lg:mx-4 lg:mt-4 lg:h-[380px] lg:rounded-card">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`${IMG}/banners/${BANNER[g.id as Guide]}`} alt="" className="kenburns motion absolute inset-0 h-full w-full object-cover object-top" />
+          <img src={`${IMG}/${BANNER[g.id as Guide]}`} alt="" className="kenburns motion absolute inset-0 h-full w-full object-cover object-top" />
           <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-night via-night/40 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 p-4">
             <p className="text-xs font-bold text-gold">{g.scope}</p>
