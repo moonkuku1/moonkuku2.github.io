@@ -120,14 +120,15 @@ export function Picker({ code, questions }: { code: string; questions: PickerQue
           {shown.map((q) => (
             <li key={q.id} className="flex items-center gap-3 border-b border-gold/15 py-3">
               <span className="price w-6 shrink-0 text-center text-xs text-text-sub">{q.order}</span>
-              <p className="flex-1 leading-snug">
+              <Link href={`/q/${q.id}`} className="press flex-1 leading-snug" aria-label={`${q.title} 자세히 보기`}>
                 {q.title}
                 <span className="mt-0.5 block text-sm text-text-sub">{q.description}</span>
                 <span className="price mt-0.5 block text-xs text-gold">
                   {q.people === 2 ? `두 사람 ${q.price}원` : `${q.price}원`}
                   {q.includesTiming && " · 시기를 알려 줘요"}
+                  {" · 자세히 ›"}
                 </span>
-              </p>
+              </Link>
               <AddButton id={q.id} title={q.title} source="picker" />
             </li>
           ))}

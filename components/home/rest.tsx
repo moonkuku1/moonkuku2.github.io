@@ -2,24 +2,36 @@ import Link from "next/link";
 import { filledBusinessInfo } from "@/lib/business-info";
 import { LEGAL_DOCS } from "@/lib/legal";
 import { Slider } from "@/components/slider";
+import { FREE_TOOLS } from "@/lib/free-list";
 
 export const DISCLAIMER = "풀이는 참고용 해석이며 의료·법률·투자 판단을 대신하지 않습니다.";
 
-/** 무료 풀이 바로가기: 지금은 신살 조회 하나 */
+/** 무료 풀이 바로가기 */
 export function FreeTools() {
   return (
     <section aria-labelledby="free-title" className="px-4 pt-8">
-      <h2 id="free-title" className="font-serif text-[21px] font-black">
-        무료로 가볍게
-      </h2>
-      <Link href="/free/sinsal" className="press lift mt-3 flex items-center gap-3 rounded-card border border-gold/30 bg-surface p-4">
-        <span aria-hidden="true" className="text-2xl">🌟</span>
-        <span className="flex-1 text-sm">
-          <b className="block text-gold">내 신살 조회</b>
-          도화·역마·화개·천을귀인과 올해 삼재를 생년월일로 바로 찾아요.
-        </span>
-        <span aria-hidden="true" className="text-gold">›</span>
-      </Link>
+      <div className="flex items-baseline justify-between">
+        <h2 id="free-title" className="font-serif text-[21px] font-black">
+          무료로 가볍게
+        </h2>
+        <Link href="/free" className="press flex items-center text-sm text-gold underline underline-offset-2">
+          모두 보기
+        </Link>
+      </div>
+      <ul className="mt-3 grid gap-3 lg:grid-cols-2">
+        {FREE_TOOLS.map((t) => (
+          <li key={t.slug}>
+            <Link href={`/free/${t.slug}`} className="press lift flex h-full items-center gap-3 rounded-card border border-gold/30 bg-surface p-4">
+              <span aria-hidden="true" className="text-2xl">{t.icon}</span>
+              <span className="flex-1 text-sm">
+                <b className="block text-gold">{t.title}</b>
+                {t.desc}
+              </span>
+              <span aria-hidden="true" className="text-gold">›</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

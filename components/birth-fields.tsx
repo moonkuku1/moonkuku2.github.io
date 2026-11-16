@@ -6,7 +6,7 @@ import type { Form } from "@/lib/birth-form";
 const field = "min-h-11 w-full rounded-input border border-gold/30 bg-night px-2 text-sm text-text focus:border-gold";
 const seg = (on: boolean) => `press flex-1 rounded-input border text-sm font-medium ${on ? "border-gold bg-gold text-night" : "border-gold/30 text-text-sub"}`;
 
-export function BirthFields({ form, setForm, maxYear, idPrefix = "b" }: { form: Form; setForm: Dispatch<SetStateAction<Form>>; maxYear: number; idPrefix?: string }) {
+export function BirthFields({ form, setForm, maxYear, idPrefix = "b", showTime = true, showGender = true }: { form: Form; setForm: Dispatch<SetStateAction<Form>>; maxYear: number; idPrefix?: string; showTime?: boolean; showGender?: boolean }) {
   const set = <K extends keyof Form>(k: K, v: Form[K]) => setForm((f) => ({ ...f, [k]: v }));
   const [hh, mm] = form.time ? form.time.split(":") : ["", "00"];
   const setTime = (h: string, m: string) => setForm((f) => ({ ...f, time: h ? `${h}:${m || "00"}` : "" }));
@@ -49,6 +49,7 @@ export function BirthFields({ form, setForm, maxYear, idPrefix = "b" }: { form: 
                 )}
               </fieldset>
 
+              {showTime && (
               <fieldset className="mt-3">
                 <legend className="mb-1 text-sm text-text-sub">
                   태어난 시간 <span className="text-xs">(몰라도 돼요)</span>
@@ -70,7 +71,9 @@ export function BirthFields({ form, setForm, maxYear, idPrefix = "b" }: { form: 
                 </div>
                 <p className="mt-1 text-xs text-text-sub">모르면 &lsquo;모름&rsquo;으로 두세요. 시주 없이 계산하고 확신도를 한 단계 낮춰요.</p>
               </fieldset>
+              )}
 
+              {showGender && (
               <div role="group" aria-label="성별" className="mt-3">
                 <span className="mb-1 block text-sm text-text-sub">성별</span>
                 <div className="grid grid-cols-2 gap-2">
@@ -82,6 +85,7 @@ export function BirthFields({ form, setForm, maxYear, idPrefix = "b" }: { form: 
                   </button>
                 </div>
               </div>
+              )}
     </>
   );
 }

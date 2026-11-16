@@ -1,7 +1,6 @@
-import { kstToday } from "./http";
-import { BirthBody, UserInputError } from "./profile-service";
+import { chartFor } from "./free-chart";
+import type { BirthBody } from "./profile-service";
 import { pillarsOf, type CardPillar } from "./profile-card";
-import { calculateChart } from "./saju/chart";
 
 /**
  * 무료 신살 조회. 사주 안에 있는 신살을 코드가 찾고, 뜻은 정해진 문장으로 보여 준다(AI를 쓰지 않는다).
@@ -34,15 +33,7 @@ export type FreeSinsal = {
 const ORDER = ["천을귀인", "문창귀인", "도화", "홍염살", "화개", "역마", "백호대살", "괴강살", "귀문관살"];
 
 export function makeSinsal(b: BirthBody): FreeSinsal {
-  const today = kstToday();
-  let chart;
-  try {
-    chart = calculateChart({ calendar: b.calendar, year: b.year, month: b.month, day: b.day, leap: b.leap, hour: b.hour, minute: b.minute, gender: b.gender, options: { referenceYear: today.year } });
-  } catch (e) {
-    const msg = (e as Error).message ?? "";
-    if (/날짜|시각|범위|음력|윤|변환표|지원/.test(msg)) throw new UserInputError(msg);
-    throw e;
-  }
+  const { chart, today } = chartFor(b);
   // 같은 이름이 기준을 달리해 여러 번 나올 수 있어(예: 연지 기준·일지 기준 도화) 자리를 합친다
   const byName = new Map<string, Set<string>>();
   for (const h of chart.sinsal.hits) {

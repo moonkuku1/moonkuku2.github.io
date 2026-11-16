@@ -20,7 +20,7 @@ const TOP_LINKS = [
   { href: "/g/assi", label: "삼백 아씨" },
   { href: "/g/doryeong", label: "삼백 도령" },
   { href: "/g/haechi", label: "해치 삼백이" },
-  { href: "/free/sinsal", label: "무료 신살" },
+  { href: "/free", label: "무료 풀이" },
 ];
 export const SCROLL_KEY = "saju300-home-scroll";
 

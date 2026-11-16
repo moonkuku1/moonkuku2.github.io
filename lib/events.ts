@@ -4,7 +4,7 @@ import { z } from "zod";
  * 이용 흐름 기록(요구사항 10.3): 개인을 식별하지 않고 "어떤 일이 일어났는지"만 센다.
  * 생년월일·사주·풀이 내용·이름은 절대 담지 않는다. 담을 수 있는 값은 아래 목록에 있는 것뿐이고, 그 밖의 값은 서버가 거절한다.
  */
-export const EVENT_NAMES = ["home_view", "card_created", "share_card", "cart_add", "cart_add_many", "cart_view", "free_sinsal"] as const;
+export const EVENT_NAMES = ["home_view", "card_created", "share_card", "cart_add", "cart_add_many", "cart_view", "free_sinsal", "free_ohaeng", "free_ilgan", "free_tti"] as const;
 export type EventName = (typeof EVENT_NAMES)[number];
 
 export const EventBody = z
